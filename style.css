@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+}
+
+.score{
+    font-weight: bold;
+    font-size: 14;
+}
+
+.game-area {
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 5px;
+    border-color: black;
+}
