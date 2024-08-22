@@ -8,8 +8,20 @@
 }
 
 .game-area {
-    margin-left: auto;
-    margin-right: auto;
-    border-width: 5px;
-    border-color: black;
+    margin: auto;
+    margin-top: 200px;
+    line-height: 800px;
+    margin-left: 800px;
+    margin-right: 800px;
+    border-width: 17.167px;
+    border-color: #000000b2;
+    border-style: initial;
+    background-image: url("images/stars.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    text-align: left;
+    padding-left: 37px;
+    flex-direction: column;
 }
