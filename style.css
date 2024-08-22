@@ -2,26 +2,48 @@
     margin: 0;
 }
 
+.game-area-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 100px;
+    padding-left: 550px;
+    padding-right: 550px;
+    margin-bottom: 200px;
+}
+
+.game-area-container .items {
+    display: flex;
+}
+
+button.audio {
+    margin-right: auto;
+	outline: none;
+	cursor: pointer;
+	border: none;
+	background: none;
+}
+
 .score{
     font-weight: bold;
-    font-size: 14;
+    font-size: 32pt;
+    margin-left: auto;
 }
 
 .game-area {
-    margin: auto;
-    margin-top: 200px;
-    line-height: 800px;
-    margin-left: 800px;
-    margin-right: 800px;
-    border-width: 17.167px;
-    border-color: #000000b2;
-    border-style: initial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 17px solid #4e4e4e;
+    border-radius: 10px; 
     background-image: url("images/stars.jpg");
     background-size: cover;
     background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    text-align: left;
-    padding-left: 37px;
-    flex-direction: column;
+    background-position:center;
+    padding-left: 497px;
+    padding-right: 497px;
+    /*padding-inline: 994.401px;*/
+    /*width: 994.401px;*/
+    height: 698.649px;
 }

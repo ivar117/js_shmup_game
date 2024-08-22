@@ -1,4 +1,4 @@
-var current_score;
+var current_score = 0;
 var position = 5;
 var max_position = 10;
 var min_position = 1;
@@ -10,13 +10,11 @@ document.addEventListener("keydown", e => {
 
 function handle_key_event(key) {
     switch (key) {
-        case "h":
         case "LeftArrow":
         case "a":
             position--;
             update_position();
             break;
-        case "l":
         case "d":
         case "RightArrow":
             position++;
@@ -25,7 +23,6 @@ function handle_key_event(key) {
         case "Space":
         case "w":
         case "UpArrow":
-        case "k":
             shoot_projectile();
     }
     /*if (key === "h" || key === "ArrowLeft") {
@@ -38,19 +35,15 @@ function shoot_projectile() {
 }
 
 function update_score() {
-    score_element = document.querySelector(".score");
-    score_element.innerText = current_score;
+    score = document.querySelector(".score");
+    score.innerHTML = `<div class="text">Score: </div> <div id="number">${current_score}</div>`;
 }
 
 function update_position() {
     character = document.querySelector(".game-area .character");
-    character.style.
+    //character.style.
 }
 
 function refresh_gui() { //Behövs det ens eller uppdaterar det konstant?
-    game_area = document.querySelector(".game-area");
-}
-
-function init() {
     game_area = document.querySelector(".game-area");
 }

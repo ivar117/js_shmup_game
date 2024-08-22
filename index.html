@@ -4,13 +4,20 @@
         <meta charset="UTF-8">
 	    <meta name="viewport" content="width=device-width initial-scale=1.0">
 	    <link rel="stylesheet" href="style.css" media="all">
-	    <title>game</title>
+	    <title>Shmup Game</title>
         <script src="main.js"></script>
     </head>
     <body>
-        <div class="game-area">
-            <!--<img src="images/blackbox.svg" class="player" width="200%">-->
-            hejsan
+        <div class="game-area-container">
+            <div class="items">
+                <button class="audio"><img width="80%" src="images/speaker_active.svg"></button>
+                <div class="score">
+                    <div class="text">Score: </div> <div id="number">0</div>
+                </div>
+            </div>
+            <div class="game-area">
+                <img src="images/whitebox.svg" class="player">
+            </div>
         </div>
     </body>
 </html>
