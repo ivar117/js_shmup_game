@@ -5,7 +5,7 @@
 .game-area-container {
     display: flex;
     justify-content: center;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     margin-top: 100px;
     padding-left: 550px;
@@ -15,6 +15,7 @@
 
 .game-area-container .items {
     display: flex;
+    justify-content: center;
 }
 
 button.audio {
@@ -46,4 +47,5 @@ button.audio {
     /*padding-inline: 994.401px;*/
     /*width: 994.401px;*/
     height: 698.649px;
+    /*padding: 300px, 497px, 300px, 497px;*/
 }

@@ -2,7 +2,7 @@ var current_score = 0;
 var position = 5;
 var max_position = 10;
 var min_position = 1;
-var speed;
+var speed; //Maybe?
 
 document.addEventListener("keydown", e => {
     handle_key_event(e.key);
