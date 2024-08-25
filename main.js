@@ -5,24 +5,25 @@ var min_position = 1;
 var speed; //Maybe?
 
 document.addEventListener("keydown", e => {
-    handle_key_event(e.key);
+    handle_key_event(e, e.key);
 });
 
-function handle_key_event(key) {
+function handle_key_event(event, key) {
     switch (key) {
-        case "LeftArrow":
+        case "ArrowLeft":
         case "a":
             position--;
             update_position();
             break;
         case "d":
-        case "RightArrow":
+        case "ArrowRight":
             position++;
             update_position();
             break;
-        case "Space":
+        case " ":
         case "w":
-        case "UpArrow":
+        case "ArrowUp":
+            event.preventDefault();
             shoot_projectile();
     }
     /*if (key === "h" || key === "ArrowLeft") {
@@ -31,19 +32,90 @@ function handle_key_event(key) {
 }
 
 function shoot_projectile() {
-    refresh_gui();
+    //refresh_gui();
+    const score_element = document.getElementById("score");
+    if (score_element.style.display === "none") {
+        score_element.style.display = "block";
+        game_area = document.getElementById("game-area");
+        game_area.style.animation = "moveBackground 1.0s linear infinite";
+    }
+    else {
+        const projectile = document.getElementById("projectile");
+        projectile.style.visibility = "visible";
+        projectile.style.animation = "shootProjectile 0.5s forwards 1";
+
+        setTimeout(() => {
+            projectile.style.visibility = "hidden";
+            projectile.style.animation = ""; // Reset animation
+        }, 500); // Match this duration with your animation duration
+
+        current_score++;
+        update_score();
+    }
 }
 
 function update_score() {
     score = document.querySelector(".score");
-    score.innerHTML = `<div class="text">Score: </div> <div id="number">${current_score}</div>`;
+    score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
 }
 
 function update_position() {
-    character = document.querySelector(".game-area .character");
-    //character.style.
+    player = document.getElementById("player");
+    //player.style.
 }
 
-function refresh_gui() { //Behövs det ens eller uppdaterar det konstant?
-    game_area = document.querySelector(".game-area");
+function toggle_audio() {
+    const path = "/images/components/"
+    const audio_button = document.getElementById("audio-control");
+    const audio_control_icon = document.getElementById("audio-control-icon");
+    const source = audio_control_icon.src;
+
+    audio_button.style.pointerEvents = 'none';
+
+    audio_control_icon.style.transition = "scale .2s"
+    audio_control_icon.style.scale = "1.15";
+    setTimeout(() => {
+        //audio_control_icon.style.transform = "scale(1.0)"
+        audio_control_icon.style.scale = "1.0"
+    }, 200);
+
+    setTimeout(() => {
+        if (source.endsWith("speaker_active.svg")) {
+            audio_control_icon.style.marginBottom = "25px";
+            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
+        } else {
+            audio_control_icon.style.marginBottom = "0";
+            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
+        }
+        audio_button.style.pointerEvents = 'auto';
+    }, 200)
+}
+
+function toggle_invert_color() {
+    const icon = document.getElementById("invert-colors-icon");
+    const score = document.getElementById("score");
+    const audio_control_icon = document.getElementById("audio-control-icon");
+    const body = document.body;
+
+    //setTimeout(() => {
+    console.log(body.style.backgroundColor);
+    const body_computedStyle = getComputedStyle(body);
+
+    if (body_computedStyle.backgroundColor === "rgb(255, 255, 255)") {
+        body.style.backgroundColor = "black";
+        body.style.color = "white";
+        score.style.filter = "invert(10%)";
+        audio_control_icon.style.filter = "invert(90%)";
+        icon.src = "/images/components/light_mode.svg"
+        icon.style.filter = "invert(90%)";
+    }
+    else {
+        body.style.backgroundColor = "white";
+        body.style.color = "black";
+        score.style.filter = "none";
+        audio_control_icon.style.filter = "none";
+        icon.src = "/images/components/dark_mode.svg"
+        icon.style.filter = "none";
+    }
+    //}, 200)
 }

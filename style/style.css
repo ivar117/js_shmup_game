@@ -1,0 +1,131 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Open Sans";
+    background-color: white;
+}
+
+#topnav {
+    display: flex;
+	align-items: center;
+    height: 94px;
+    top: 0;
+    position: sticky;
+    /*padding-top: 45px;*/
+    /*padding-bottom: 45px;*/
+}
+
+button.invert-colors {
+    margin-left: auto;
+    margin-right: 60px;
+    width: 45px;
+}
+
+.game-area-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin-top: 50px;
+    margin-bottom: 200px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 60%;
+    max-height: 60%;
+}
+
+.game-area-container .items {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 16px;
+    position: relative; /* Ensure .items is positioned relative */
+    height: 50px; /* Set a fixed height for the container */
+}
+
+button.audio, button.invert-colors {
+	outline: none;
+	cursor: pointer;
+	border: none;
+	background: none;
+    padding: 0;
+}
+
+button.audio {
+    margin-right: auto;
+}
+
+#audio-control-icon {
+    bottom: auto;
+}
+
+/*button.audio:hover {*/
+    /*transition: transform .2s;*/
+    /*transform: scale(1.1); [> Resize <]*/
+    /*scale: 1.1;*/
+/*}*/
+
+.score{
+    font-weight: bold;
+    font-size: 32pt;
+    margin-left: auto;
+}
+
+.score .score-text {
+    display: inline;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: center bottom;
+        /*transform: translateY(0)*/
+    }
+    100% {
+        background-position: center top;
+        /*transform: translateY(-4000px)*/
+    }
+}
+
+@keyframes shootProjectile {
+    0% {
+        transform: translateY(0); /* Start below the visible area */
+        opacity: 1;                  /* Fully visible */
+    }
+    100% {
+        transform: translateY(-100%);    /* Move to the original position */
+        opacity: 0;                  /* Fade out */
+        visibility: hidden;          /* Make it non-interactive */
+    }
+}
+
+#projectile {
+    visibility: hidden; 
+    position: absolute;
+    /*bottom: 100%; [> Position below the game area <]*/
+    /*left: 50%; [> Center the projectile horizontally <]*/
+    margin-inline: auto;
+}
+
+.game-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+    border: 17px solid #4e4e4e;
+    border-radius: 10px; 
+    background-image: url("/images/stars.jpg");
+    /*background-repeat: repeat-y;*/
+    background-repeat:space;
+    background-size: cover;
+    /*background-size: 3000px;*/
+    background-attachment: fixed;
+    /*background-position:center bottom;*/
+    /*animation: moveBackground 1s linear infinite;*/
+    /*padding-inline: 994.401px;*/
+    /*width: 994.401px;*/
+    height: 698.649px;
+    /*padding: 300px, 497px, 300px, 497px;*/
+}
