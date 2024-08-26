@@ -11,7 +11,7 @@ body {
 #topnav {
     display: flex;
 	align-items: center;
-    height: 94px;
+    height: 84px;
     top: 0;
     position: sticky;
     /*padding-top: 45px;*/
@@ -29,7 +29,6 @@ button.invert-colors {
     justify-content: center;
     flex-direction: column;
     flex-wrap: wrap;
-    margin-top: 50px;
     margin-bottom: 200px;
     margin-right: auto;
     margin-left: auto;
@@ -41,7 +40,7 @@ button.invert-colors {
     display: flex;
     justify-content: center;
     flex-direction: row;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     position: relative; /* Ensure .items is positioned relative */
     height: 50px; /* Set a fixed height for the container */
 }
@@ -126,6 +125,12 @@ button.audio {
     /*animation: moveBackground 1s linear infinite;*/
     /*padding-inline: 994.401px;*/
     /*width: 994.401px;*/
-    height: 698.649px;
+    height: 898.649px;
     /*padding: 300px, 497px, 300px, 497px;*/
+}
+
+@media (max-width: 1920px) {
+    .game-area {
+        height: 500px;
+    }
 }
