@@ -4,14 +4,15 @@
 }
 
 body {
-    font-family: "Open Sans";
+    font-family: "Open Sans", sans-serif;
     background-color: white;
 }
 
 #topnav {
     display: flex;
 	align-items: center;
-    height: 84px;
+    /* height: 54px; */
+    margin-top: 20px;
     top: 0;
     position: sticky;
     /*padding-top: 45px;*/
@@ -90,7 +91,7 @@ button.audio {
 
 @keyframes shootProjectile {
     0% {
-        transform: translateY(0); /* Start below the visible area */
+        transform: translateY(100%); /* Start below the visible area */
         opacity: 1;                  /* Fully visible */
     }
     100% {
@@ -126,7 +127,8 @@ button.audio {
     /*padding-inline: 994.401px;*/
     /*width: 994.401px;*/
     height: 898.649px;
-    /*padding: 300px, 497px, 300px, 497px;*/
+    position: relative;
+    /*padding: 300px 497px 300px 497px;*/
 }
 
 @media (max-width: 1920px) {

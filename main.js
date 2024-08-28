@@ -37,17 +37,17 @@ function shoot_projectile() {
     if (score_element.style.display === "none") {
         score_element.style.display = "block";
         game_area = document.getElementById("game-area");
-        game_area.style.animation = "moveBackground 1.0s linear infinite";
+        game_area.style.animation = "moveBackground 0.5s linear infinite";
     }
     else {
         const projectile = document.getElementById("projectile");
         projectile.style.visibility = "visible";
-        projectile.style.animation = "shootProjectile 0.5s forwards 1";
+        projectile.style.animation = "shootProjectile 0.5s forwards";
 
         setTimeout(() => {
             projectile.style.visibility = "hidden";
             projectile.style.animation = ""; // Reset animation
-        }, 500); // Match this duration with your animation duration
+        }, 1000); // Match this duration with your animation duration
 
         current_score++;
         update_score();
