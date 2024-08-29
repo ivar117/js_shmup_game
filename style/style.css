@@ -29,9 +29,12 @@ button.invert-colors {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    flex-wrap: wrap;
+    margin-bottom: 200px;
     margin-right: auto;
     margin-left: auto;
-    width: 70vw;
+    max-width: 60%;
+    max-height: 60%;
 }
 
 .game-area-container .items {
@@ -99,11 +102,9 @@ button.audio {
 #projectile {
     visibility: hidden; 
     position: absolute;
-    filter: invert(80%);
-    
     /*bottom: 100%; [> Position below the game area <]*/
     /*left: 50%; [> Center the projectile horizontally <]*/
-
+    margin-inline: auto;
 }
 
 .game-area {
@@ -123,15 +124,13 @@ button.audio {
     /*animation: moveBackground 1s linear infinite;*/
     /*padding-inline: 994.401px;*/
     /*width: 994.401px;*/
-    /*height: 1298.649px;*/
-    /*height: 50vh;*/
-    position: relative; /* Items are relative to the game area */
-    height: 80vh;
+    height: 898.649px;
+    position: relative;
     /*padding: 300px 497px 300px 497px;*/
 }
 
-/*@media (max-width: 1920px) {*/
-    /*.game-area {*/
-        /*height: 500px;*/
-    /*}*/
-/*}*/
+@media (max-width: 1920px) {
+    .game-area {
+        height: 500px;
+    }
+}
