@@ -24,30 +24,33 @@ function handle_key_event(event, key) {
         case "w":
         case "ArrowUp":
             event.preventDefault();
-            shoot_projectile();
+            forward_event_handler();
     }
     /*if (key === "h" || key === "ArrowLeft") {
         position--;
     }*/
 }
 
-function shoot_projectile() {
+function forward_event_handler() {
     //refresh_gui();
     const score_element = document.getElementById("score");
+    game_area = document.getElementById("game-area");
     if (score_element.style.display === "none") {
         score_element.style.display = "block";
-        game_area = document.getElementById("game-area");
         game_area.style.animation = "moveBackground 0.5s linear infinite";
     }
     else {
         const projectile = document.getElementById("projectile");
+        console.log(game_area.style.height);
+        const computedStyle = window.getComputedStyle(game_area);
+        console.log(computedStyle.height); // Accessing the computed height
         projectile.style.visibility = "visible";
         projectile.style.animation = "shootProjectile 0.5s forwards";
 
         setTimeout(() => {
             projectile.style.visibility = "hidden";
             projectile.style.animation = ""; // Reset animation
-        }, 1000); // Match this duration with your animation duration
+        }, 500); // Match this duration with your animation duration
 
         current_score++;
         update_score();
@@ -97,7 +100,6 @@ function toggle_invert_color() {
     const audio_control_icon = document.getElementById("audio-control-icon");
     const body = document.body;
 
-    //setTimeout(() => {
     console.log(body.style.backgroundColor);
     const body_computedStyle = getComputedStyle(body);
 
@@ -117,5 +119,4 @@ function toggle_invert_color() {
         icon.src = "/images/components/dark_mode.svg"
         icon.style.filter = "none";
     }
-    //}, 200)
 }

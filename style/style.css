@@ -92,11 +92,9 @@ button.audio {
 @keyframes shootProjectile {
     0% {
         transform: translateY(100%); /* Start below the visible area */
-        opacity: 1;                  /* Fully visible */
     }
     100% {
         transform: translateY(-100%);    /* Move to the original position */
-        opacity: 0;                  /* Fade out */
         visibility: hidden;          /* Make it non-interactive */
     }
 }
