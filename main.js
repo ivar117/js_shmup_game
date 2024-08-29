@@ -35,25 +35,69 @@ function forward_event_handler() {
     //refresh_gui();
     const score_element = document.getElementById("score");
     game_area = document.getElementById("game-area");
-    if (score_element.style.display === "none") {
+    if (score_element.style.display === "none") { // Animate game area background image
         score_element.style.display = "block";
         game_area.style.animation = "moveBackground 0.5s linear infinite";
     }
-    else {
-        const projectile = document.getElementById("projectile");
-        console.log(game_area.style.height);
-        const computedStyle = window.getComputedStyle(game_area);
-        console.log(computedStyle.height); // Accessing the computed height
-        projectile.style.visibility = "visible";
-        projectile.style.animation = "shootProjectile 0.5s forwards";
+    else { /* Shoot projectile */
+        if (!document.getElementById("projectile")) { /* If no projectile is present in the DOM */
+            const projectile = document.createElement('img');
+            projectile.src = 'images/components/projectile.svg';
+            projectile.width = 12;
+            projectile.id = 'projectile';
+            projectile.alt = 'Projectile';
+            game_area.appendChild(projectile);
 
-        setTimeout(() => {
-            projectile.style.visibility = "hidden";
-            projectile.style.animation = ""; // Reset animation
-        }, 500); // Match this duration with your animation duration
+            const animation_time = 800;
+            const game_area_height = game_area.clientHeight + 100;
 
-        current_score++;
-        update_score();
+            /* TODO: use player to calculate initial projectile y position */
+            const player = document.getElementById("player");
+            //const player_DOMRect = player.getBoundingClientRect();
+            //const player_top = player_DOMRect.top
+            //const projectile_start_x = playerRect.left + (playerRect.width / 2); // Center X of player
+            //console.log(player_top);
+            const computedStyle = window.getComputedStyle(player);
+            const player_height = parseInt(computedStyle.height);
+            console.log(player_height);
+
+            //projectile.style.top = `${player_top}px`;
+            //const projectile_y = parseFloat(projectile.style.top);
+            projectile.style.marginBottom = `${player_height+60}px`; /* Start on top of the player */
+            //projectile.style.left = `${projectile_start_x}px`;
+            //projectile.style.marginBottom = "126px";
+
+            const keyframes = [
+                    //{ transform: 'translateY(' + player_DOMRect_top + 'px)' },  // Start below the visible area
+                    { transform: 'translateY(100%)' },  // Start below the visible area
+                    { transform: 'translateY(-' + game_area_height + 'px)', visibility: 'hidden' } // Move across the game area
+            ];
+
+
+            const options = {
+                   duration: animation_time, // Animation duration in milliseconds
+                   fill: 'forwards' // Keep the last keyframe after finishing
+            };
+
+            //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
+            //projectile.style.left = `${player_DOMRect.left}px`; // Align with player's horizontal position
+
+            //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
+            //projectile.style.left = `${player_DOMRect.left}px`; // Align with player's horizontal position
+            projectile.style.visibility = "visible";
+            //projectile.style.animation = "shootProjectile 0.5s forwards";
+            //projectile.style.animation = keyframes + " 0.5s forwards";
+            projectile.animate(keyframes, options);
+
+            setTimeout(() => {
+                projectile.style.visibility = "hidden";
+                projectile.style.animation = ""; // Reset animation
+                projectile.remove();
+                current_score++;
+                update_score();
+                //projectile.remove();
+            }, animation_time); // Match this duration with your animation duration
+        }
     }
 }
 

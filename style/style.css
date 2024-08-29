@@ -11,12 +11,9 @@ body {
 #topnav {
     display: flex;
 	align-items: center;
-    /* height: 54px; */
     margin-top: 20px;
     top: 0;
     position: sticky;
-    /*padding-top: 45px;*/
-    /*padding-bottom: 45px;*/
 }
 
 button.invert-colors {
@@ -29,12 +26,9 @@ button.invert-colors {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    flex-wrap: wrap;
-    margin-bottom: 200px;
     margin-right: auto;
     margin-left: auto;
-    max-width: 60%;
-    max-height: 60%;
+    width: 70vw;
 }
 
 .game-area-container .items {
@@ -62,12 +56,6 @@ button.audio {
     bottom: auto;
 }
 
-/*button.audio:hover {*/
-    /*transition: transform .2s;*/
-    /*transform: scale(1.1); [> Resize <]*/
-    /*scale: 1.1;*/
-/*}*/
-
 .score{
     font-weight: bold;
     font-size: 32pt;
@@ -81,30 +69,16 @@ button.audio {
 @keyframes moveBackground {
     0% {
         background-position: center bottom;
-        /*transform: translateY(0)*/
     }
     100% {
         background-position: center top;
-        /*transform: translateY(-4000px)*/
-    }
-}
-
-@keyframes shootProjectile {
-    0% {
-        transform: translateY(100%); /* Start below the visible area */
-    }
-    100% {
-        transform: translateY(-100%);    /* Move to the original position */
-        visibility: hidden;          /* Make it non-interactive */
     }
 }
 
 #projectile {
     visibility: hidden; 
     position: absolute;
-    /*bottom: 100%; [> Position below the game area <]*/
-    /*left: 50%; [> Center the projectile horizontally <]*/
-    margin-inline: auto;
+    filter: invert(80%);
 }
 
 .game-area {
@@ -118,19 +92,7 @@ button.audio {
     /*background-repeat: repeat-y;*/
     background-repeat:space;
     background-size: cover;
-    /*background-size: 3000px;*/
     background-attachment: fixed;
-    /*background-position:center bottom;*/
-    /*animation: moveBackground 1s linear infinite;*/
-    /*padding-inline: 994.401px;*/
-    /*width: 994.401px;*/
-    height: 898.649px;
-    position: relative;
-    /*padding: 300px 497px 300px 497px;*/
-}
-
-@media (max-width: 1920px) {
-    .game-area {
-        height: 500px;
-    }
+    position: relative; /* Items are relative to the game area */
+    height: 80vh;
 }
