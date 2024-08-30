@@ -3,6 +3,8 @@ var position = 5;
 var max_position = 10;
 var min_position = 1;
 var speed; //Maybe?
+// No
+// YES?!!!!
 
 document.addEventListener("keydown", e => {
     handle_key_event(e, e.key);
@@ -26,18 +28,20 @@ function handle_key_event(event, key) {
             event.preventDefault();
             forward_event_handler();
     }
-    /*if (key === "h" || key === "ArrowLeft") {
-        position--;
-    }*/
 }
 
 function forward_event_handler() {
     //refresh_gui();
     const score_element = document.getElementById("score");
     game_area = document.getElementById("game-area");
-    if (score_element.style.display === "none") { // Animate game area background image
+    if (score_element.style.display === "none") { // Animate game area background image, only run at start
+        /* Animate the background */
         score_element.style.display = "block";
         game_area.style.animation = "moveBackground 0.5s linear infinite";
+
+        /* Turn on the music! */
+        const audio_element = document.getElementById("audio-element");
+        audio_element.play();
     }
     else { /* Shoot projectile */
         if (!document.getElementById("projectile")) { /* If no projectile is present in the DOM */
@@ -48,9 +52,9 @@ function forward_event_handler() {
             projectile.alt = 'Projectile';
             game_area.appendChild(projectile);
 
-            const animation_time = 800;
+            const projectile_animation_time = 500;
             const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
-            const game_area_width = game_area.clientWidth; /* Client width */
+            const game_area_width = game_area.clientWidth; /* Game area width */
             console.log(game_area_width);
 
             /* TODO: use player to calculate initial projectile y position */
@@ -77,7 +81,7 @@ function forward_event_handler() {
 
 
             const options = {
-                   duration: animation_time, // Animation duration in milliseconds
+                   duration: projectile_animation_time, // Animation duration in milliseconds
                    fill: 'forwards' // Keep the last keyframe after finishing
             };
 
@@ -87,7 +91,6 @@ function forward_event_handler() {
             //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
             //projectile.style.left = `${player_DOMRect.left}px`; // Align with player's horizontal position
             projectile.style.visibility = "visible";
-            //projectile.style.animation = "shootProjectile 0.5s forwards";
             //projectile.style.animation = keyframes + " 0.5s forwards";
             projectile.animate(keyframes, options);
 
@@ -98,7 +101,7 @@ function forward_event_handler() {
                 current_score++;
                 update_score();
                 //projectile.remove();
-            }, animation_time); // Match this duration with your animation duration
+            }, projectile_animation_time);
         }
     }
 }
@@ -110,31 +113,31 @@ function update_score() {
 
 function update_position() {
     player = document.getElementById("player");
-    //player.style.
 }
 
 function toggle_audio() {
     const path = "/images/components/"
     const audio_button = document.getElementById("audio-control");
     const audio_control_icon = document.getElementById("audio-control-icon");
-    const source = audio_control_icon.src;
+    const icon_source = audio_control_icon.src;
+    const audio_element = document.getElementById("audio-element");
 
     audio_button.style.pointerEvents = 'none';
-
     audio_control_icon.style.transition = "scale .2s"
     audio_control_icon.style.scale = "1.15";
     setTimeout(() => {
-        //audio_control_icon.style.transform = "scale(1.0)"
         audio_control_icon.style.scale = "1.0"
     }, 200);
 
     setTimeout(() => {
-        if (source.endsWith("speaker_active.svg")) {
+        if (icon_source.endsWith("speaker_active.svg")) {
             audio_control_icon.style.marginBottom = "25px";
             audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
+            audio_element.muted = true;
         } else {
             audio_control_icon.style.marginBottom = "0";
             audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
+            audio_element.muted = false;
         }
         audio_button.style.pointerEvents = 'auto';
     }, 200)
