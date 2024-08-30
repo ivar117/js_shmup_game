@@ -88,7 +88,7 @@ button.audio {
     overflow: hidden;
     border: 17px solid #4e4e4e;
     border-radius: 10px; 
-    background-image: url("/images/stars.jpg");
+    background-image: url("../images/stars.jpg");
     /*background-repeat: repeat-y;*/
     background-repeat:space;
     background-size: cover;

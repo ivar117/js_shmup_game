@@ -116,7 +116,7 @@ function update_position() {
 }
 
 function toggle_audio() {
-    const path = "/images/components/"
+    const path = "images/components/"
     const audio_button = document.getElementById("audio-control");
     const audio_control_icon = document.getElementById("audio-control-icon");
     const icon_source = audio_control_icon.src;
@@ -157,7 +157,7 @@ function toggle_invert_color() {
         body.style.color = "white";
         score.style.filter = "invert(10%)";
         audio_control_icon.style.filter = "invert(90%)";
-        icon.src = "/images/components/light_mode.svg"
+        icon.src = "images/components/light_mode.svg"
         icon.style.filter = "invert(90%)";
     }
     else {
@@ -165,7 +165,7 @@ function toggle_invert_color() {
         body.style.color = "black";
         score.style.filter = "none";
         audio_control_icon.style.filter = "none";
-        icon.src = "/images/components/dark_mode.svg"
+        icon.src = "images/components/dark_mode.svg"
         icon.style.filter = "none";
     }
 }
