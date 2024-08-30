@@ -49,7 +49,9 @@ function forward_event_handler() {
             game_area.appendChild(projectile);
 
             const animation_time = 800;
-            const game_area_height = game_area.clientHeight + 100;
+            const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
+            const game_area_width = game_area.clientWidth; /* Client width */
+            console.log(game_area_width);
 
             /* TODO: use player to calculate initial projectile y position */
             const player = document.getElementById("player");
