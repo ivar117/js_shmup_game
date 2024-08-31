@@ -3,6 +3,7 @@ var position = 5;
 var max_position = 10;
 var min_position = 1;
 var speed; //Maybe?
+var asteroid_last_placement;
 // No
 // YES?!!!!
 
@@ -34,28 +35,35 @@ function forward_event_handler() {
     //refresh_gui();
     const score_element = document.getElementById("score");
     game_area = document.getElementById("game-area");
-    if (score_element.style.display === "none") { // Animate game area background image, only run at start
+    if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
         game_area.style.animation = "moveBackground 0.5s linear infinite";
-
         /* Turn on the music! */
         const audio_element = document.getElementById("audio-element");
         audio_element.play();
+        /* Remove the start instruction */
+        const start_text = document.getElementById("start-text");
+        start_text.remove();
+        /* Initialize random asteroid placement in the game area */
+        setTimeout(() => {
+            create_asteroid();
+            setInterval(create_asteroid, 4000);
+        }, 1000)
     }
     else { /* Shoot projectile */
         if (!document.getElementById("projectile")) { /* If no projectile is present in the DOM */
-            const projectile = document.createElement('img');
-            projectile.src = 'images/components/projectile.svg';
+            const projectile = document.createElement("img");
+            projectile.src = "images/components/projectile.svg";
             projectile.width = 12;
-            projectile.id = 'projectile';
-            projectile.alt = 'Projectile';
+            projectile.id = "projectile";
+            projectile.alt = "Projectile";
             game_area.appendChild(projectile);
 
             const projectile_animation_time = 500;
             const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
             const game_area_width = game_area.clientWidth; /* Game area width */
-            console.log(game_area_width);
+            //console.log(game_area_width);
 
             /* TODO: use player to calculate initial projectile y position */
             const player = document.getElementById("player");
@@ -65,7 +73,7 @@ function forward_event_handler() {
             //console.log(player_top);
             const computedStyle = window.getComputedStyle(player);
             const player_height = parseInt(computedStyle.height);
-            console.log(player_height);
+            //console.log(player_height);
 
             //projectile.style.top = `${player_top}px`;
             //const projectile_y = parseFloat(projectile.style.top);
@@ -74,15 +82,14 @@ function forward_event_handler() {
             //projectile.style.marginBottom = "126px";
 
             const keyframes = [
-                    //{ transform: 'translateY(' + player_DOMRect_top + 'px)' },  // Start below the visible area
-                    { transform: 'translateY(100%)' },  // Start below the visible area
-                    { transform: 'translateY(-' + game_area_height + 'px)', visibility: 'hidden' } // Move across the game area
+                    { transform: "translateY(100%)" },  // Start below the visible area
+                    { transform: "translateY(-" + game_area_height + "px)", visibility: "hidden" } // Move across the game area
             ];
 
 
             const options = {
                    duration: projectile_animation_time, // Animation duration in milliseconds
-                   fill: 'forwards' // Keep the last keyframe after finishing
+                   fill: "forwards" // Keep the last keyframe after finishing
             };
 
             //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
@@ -100,7 +107,6 @@ function forward_event_handler() {
                 projectile.remove();
                 current_score++;
                 update_score();
-                //projectile.remove();
             }, projectile_animation_time);
         }
     }
@@ -122,7 +128,7 @@ function toggle_audio() {
     const icon_source = audio_control_icon.src;
     const audio_element = document.getElementById("audio-element");
 
-    audio_button.style.pointerEvents = 'none';
+    audio_button.style.pointerEvents = "none";
     audio_control_icon.style.transition = "scale .2s"
     audio_control_icon.style.scale = "1.15";
     setTimeout(() => {
@@ -139,7 +145,7 @@ function toggle_audio() {
             audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
             audio_element.muted = false;
         }
-        audio_button.style.pointerEvents = 'auto';
+        audio_button.style.pointerEvents = "auto";
     }, 200)
 }
 
@@ -168,4 +174,43 @@ function toggle_invert_color() {
         icon.src = "images/components/dark_mode.svg"
         icon.style.filter = "none";
     }
+}
+
+function create_asteroid() {
+    const game_area = document.getElementById("game-area")
+    const asteroid = document.createElement("img");
+    asteroid.src = "images/components/asteroid.png";
+    asteroid.style.width = "5%";
+    asteroid.id = "asteroid";
+    asteroid.alt = "Asteroid";
+    game_area.appendChild(asteroid);
+    
+    const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
+    const game_area_width = game_area.clientWidth; /* Game area width */
+    const asteroid_height = asteroid.clientHeight; // Height of the asteroid image
+    const asteroid_animation_time = 5000;
+
+    // Calculate how far to move the asteroid during the animation
+    const distance_to_move = game_area_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
+    
+    console.log("Game Area Width: ", game_area_width);
+    vertical_placement = Math.floor(Math.random() * ((game_area_width - 60) - 1));
+    console.log(vertical_placement);
+    asteroid.style.left = vertical_placement + "px";
+
+    const keyframes = [
+        { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Move the asteroid upward beyond the view
+        { transform: `translateY(${game_area_height}px) rotate(360deg)` } // Move it down past the bottom
+    ];
+
+    const options = {
+        duration: asteroid_animation_time, // Animation duration in milliseconds
+        fill: "forwards" // Keep the last keyframe after finishing
+    };
+
+    asteroid.animate(keyframes, options);
+    setTimeout(() => {
+        asteroid.remove();
+    }, asteroid_animation_time);
+    asteroid_last_placement = vertical_placement;
 }

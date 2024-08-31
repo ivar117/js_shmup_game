@@ -40,6 +40,33 @@ button.invert-colors {
     height: 50px; /* Set a fixed height for the container */
 }
 
+.game-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+    border: 17px solid #4e4e4e;
+    border-radius: 10px;
+    background-image: url("../images/stars.jpg");
+    /*background-repeat: repeat-y;*/
+    background-repeat:space;
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative; /* Items are relative to the game area */
+    height: 80vh;
+    flex-direction: row;
+}
+
+.start-text {
+    font-size: 32pt;
+    color: white;
+    filter: invert(10%);
+    font-weight: bold;
+    /*margin: auto;*/
+    position: absolute;
+    bottom: 50%;
+}
+
 button.audio, button.invert-colors {
 	outline: none;
 	cursor: pointer;
@@ -81,18 +108,13 @@ button.audio {
     filter: invert(80%);
 }
 
-.game-area {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    overflow: hidden;
-    border: 17px solid #4e4e4e;
-    border-radius: 10px; 
-    background-image: url("../images/stars.jpg");
-    /*background-repeat: repeat-y;*/
-    background-repeat:space;
-    background-size: cover;
-    background-attachment: fixed;
-    position: relative; /* Items are relative to the game area */
-    height: 80vh;
+#player {
+    margin-top: auto;
+    margin-bottom: 10px;
+    filter: invert(10%);
+}
+
+#asteroid {
+    filter: grayscale(100%);
+    position: absolute;
 }
