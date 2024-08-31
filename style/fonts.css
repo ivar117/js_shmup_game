@@ -1,7 +1,16 @@
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'JetBrains Mono';
   font-style: normal;
   font-stretch: 100%;
   font-display: swap;
-  src: url(/style/OpenSans-var.ttf) format('truetype');
+  src: url(JetBrainsMono-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: bold;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(JetBrainsMono-Bold.ttf) format('truetype');
 }
