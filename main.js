@@ -15,19 +15,18 @@ function handle_key_event(event, key) {
     switch (key) {
         case "ArrowLeft":
         case "a":
-            position--;
-            update_position();
+            move_player_vertically();
             break;
         case "d":
         case "ArrowRight":
-            position++;
-            update_position();
+            move_player_vertically();
             break;
         case " ":
         case "w":
         case "ArrowUp":
             event.preventDefault();
             forward_event_handler();
+            break;
     }
 }
 
@@ -48,7 +47,7 @@ function forward_event_handler() {
         /* Initialize random asteroid placement in the game area */
         setTimeout(() => {
             create_asteroid();
-            setInterval(create_asteroid, 4000);
+            setInterval(create_asteroid, 3000);
         }, 1000)
     }
     else { /* Shoot projectile */
@@ -63,14 +62,12 @@ function forward_event_handler() {
             const projectile_animation_time = 500;
             const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
             const game_area_width = game_area.clientWidth; /* Game area width */
-            //console.log(game_area_width);
 
             /* TODO: use player to calculate initial projectile y position */
             const player = document.getElementById("player");
             //const player_DOMRect = player.getBoundingClientRect();
             //const player_top = player_DOMRect.top
             //const projectile_start_x = playerRect.left + (playerRect.width / 2); // Center X of player
-            //console.log(player_top);
             const computedStyle = window.getComputedStyle(player);
             const player_height = parseInt(computedStyle.height);
             //console.log(player_height);
@@ -117,8 +114,14 @@ function update_score() {
     score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
 }
 
-function update_position() {
+function move_player_vertically() {
+    const game_area = document.getElementById("game-area")
+    const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
+    const game_area_width = game_area.clientWidth; /* Game area width */
     player = document.getElementById("player");
+
+    max_position = game_area_width - 60;
+    console.log("Max pos: ", max_position);
 }
 
 function toggle_audio() {
@@ -188,7 +191,6 @@ function toggle_invert_color() {
     const audio_control_icon = document.getElementById("audio-control-icon");
     const body = document.body;
 
-    console.log(body.style.backgroundColor);
     const body_computedStyle = getComputedStyle(body);
 
     if (body_computedStyle.backgroundColor === "rgb(255, 255, 255)") {
@@ -213,7 +215,7 @@ function create_asteroid() {
     const game_area = document.getElementById("game-area")
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
-    asteroid.style.width = "5%";
+    asteroid.style.width = "7%";
     asteroid.id = "asteroid";
     asteroid.alt = "Asteroid";
     game_area.appendChild(asteroid);
@@ -221,14 +223,12 @@ function create_asteroid() {
     const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
     const game_area_width = game_area.clientWidth; /* Game area width */
     const asteroid_height = asteroid.clientHeight; // Height of the asteroid image
-    const asteroid_animation_time = 5000;
+    const asteroid_animation_time = 4000;
 
     // Calculate how far to move the asteroid during the animation
     const distance_to_move = game_area_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
     
-    console.log("Game Area Width: ", game_area_width);
     vertical_placement = Math.floor(Math.random() * ((game_area_width - 60) - 1));
-    console.log(vertical_placement);
     asteroid.style.left = vertical_placement + "px";
 
     const keyframes = [
