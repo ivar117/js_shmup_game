@@ -122,13 +122,14 @@ function update_position() {
 }
 
 function toggle_audio() {
-    const path = "images/components/"
+    const path = "images/components/";
     const audio_button = document.getElementById("audio-control");
     const audio_control_icon = document.getElementById("audio-control-icon");
-    const icon_source = audio_control_icon.src;
     const audio_element = document.getElementById("audio-element");
 
+    audio_control_icon.alt = "Audio";
     audio_button.style.pointerEvents = "none";
+
     audio_control_icon.style.transition = "scale .2s"
     audio_control_icon.style.scale = "1.15";
     setTimeout(() => {
@@ -136,18 +137,50 @@ function toggle_audio() {
     }, 200);
 
     setTimeout(() => {
-        if (icon_source.endsWith("speaker_active.svg")) {
-            audio_control_icon.style.marginBottom = "25px";
+        const mute_state = localStorage.getItem('audio_mute_state');
+        if (mute_state === null) { /* If not previously cached */
+            localStorage.setItem("audio_mute_state", "false")
+        }
+
+        if (mute_state === "true") {
+            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
+            audio_element.muted = false;
+            localStorage.setItem("audio_mute_state", "false");
+        } else {
+            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
+            audio_element.muted = true;
+            localStorage.setItem("audio_mute_state", "true");
+        }
+        audio_button.style.pointerEvents = "auto";
+    }, 200);
+}
+
+function init_audio_icon() {
+    const path = "images/components/";
+    const audio_control_container = document.getElementById("audio-control");
+    const audio_element = document.getElementById("audio-element");
+    const audio_control_icon = document.createElement('img');
+    audio_control_icon.style.width = "80%";
+    audio_control_icon.id = "audio-control-icon"
+
+    const mute_state = localStorage.getItem('audio_mute_state');
+    if (mute_state === null) { /* If not previously cached */
+        localStorage.setItem("audio_mute_state", "false")
+    }
+
+    setTimeout(() => {
+        if (mute_state == "true") {
             audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
             audio_element.muted = true;
         } else {
-            audio_control_icon.style.marginBottom = "0";
             audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
             audio_element.muted = false;
         }
-        audio_button.style.pointerEvents = "auto";
-    }, 200)
+    }, 200);
+
+    audio_control_container.appendChild(audio_control_icon);
 }
+
 
 function toggle_invert_color() {
     const icon = document.getElementById("invert-colors-icon");
@@ -214,3 +247,7 @@ function create_asteroid() {
     }, asteroid_animation_time);
     asteroid_last_placement = vertical_placement;
 }
+
+requestAnimationFrame(() => {
+    init_audio_icon();
+})
