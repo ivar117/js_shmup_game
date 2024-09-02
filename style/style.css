@@ -105,10 +105,9 @@ button.audio {
 }
 
 #projectile {
-    visibility: hidden; 
-    position: absolute;
     filter: invert(80%);
     z-index: 2;
+    position: absolute;
 }
 
 #player {

@@ -63,24 +63,19 @@ function forward_event_handler() {
             projectile.alt = "Projectile";
             game_area.appendChild(projectile);
 
-            const projectile_animation_time = 500;
+            const projectile_animation_time = 700;
             const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
             const game_area_width = game_area.clientWidth; /* Game area width */
 
-            /* TODO: use player to calculate initial projectile y position */
             const player = document.getElementById("player");
-            //const player_DOMRect = player.getBoundingClientRect();
-            //const player_top = player_DOMRect.top
-            //const projectile_start_x = playerRect.left + (playerRect.width / 2); // Center X of player
-            const computedStyle = window.getComputedStyle(player);
-            const player_height = parseInt(computedStyle.height);
-            //console.log(player_height);
+            const player_computed_style = window.getComputedStyle(player);
+            const player_height = parseInt(player_computed_style.height);
+            const player_width = parseFloat(player_computed_style.width);
+            const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
+            const player_position = parseFloat(player_computed_style.left);
+            projectile.style.left = player_position + (player_width / 2) - (projectile_width / 2) + "px";
 
-            //projectile.style.top = `${player_top}px`;
-            //const projectile_y = parseFloat(projectile.style.top);
             projectile.style.marginBottom = `${player_height+60}px`; /* Start on top of the player */
-            //projectile.style.left = `${projectile_start_x}px`;
-            //projectile.style.marginBottom = "126px";
 
             const keyframes = [
                     { transform: "translateY(100%)" },  // Start below the visible area
@@ -93,13 +88,7 @@ function forward_event_handler() {
                    fill: "forwards" // Keep the last keyframe after finishing
             };
 
-            //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
-            //projectile.style.left = `${player_DOMRect.left}px`; // Align with player's horizontal position
-
-            //projectile.style.top = `${player_top + player.offsetHeight}px`; // Placing projectile below the player
-            //projectile.style.left = `${player_DOMRect.left}px`; // Align with player's horizontal position
             projectile.style.visibility = "visible";
-            //projectile.style.animation = keyframes + " 0.5s forwards";
             projectile.animate(keyframes, options);
 
             setTimeout(() => {
