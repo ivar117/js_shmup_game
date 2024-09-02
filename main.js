@@ -15,11 +15,14 @@ function handle_key_event(event, key) {
     switch (key) {
         case "ArrowLeft":
         case "a":
-            move_player_vertically();
+            event.preventDefault();
+            move_player_horizontally();
             break;
-        case "d":
         case "ArrowRight":
-            move_player_vertically();
+        case "d":
+            console.log("D key pressed"); // Add this line to check
+            event.preventDefault();
+            move_player_horizontally();
             break;
         case " ":
         case "w":
@@ -114,14 +117,26 @@ function update_score() {
     score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
 }
 
-function move_player_vertically() {
+function move_player_horizontally() {
     const game_area = document.getElementById("game-area")
     const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
     const game_area_width = game_area.clientWidth; /* Game area width */
     player = document.getElementById("player");
+    const player_position = getComputedStyle(player).left;
+    let player_position_int = parseInt(player_position);
 
-    max_position = game_area_width - 60;
+    max_position = game_area_width - 80;
     console.log("Max pos: ", max_position);
+    console.log("Current pos: ", player_position);
+    console.log("Current pos (int): ", player_position_int);
+
+    if (player_position_int >= max_position) {
+        player_position_int = max_position;
+    }
+    else {
+        player_position_int += 10;
+    }
+    player.style.left = player_position_int + "px";
 }
 
 function toggle_audio() {
