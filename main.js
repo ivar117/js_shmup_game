@@ -15,14 +15,15 @@ function handle_key_event(event, key) {
     switch (key) {
         case "ArrowLeft":
         case "a":
-            event.preventDefault();
-            move_player_horizontally();
+            if (document.getElementById("score").style.display != "none") {
+                move_player_horizontally("left");
+            }
             break;
         case "ArrowRight":
         case "d":
-            console.log("D key pressed"); // Add this line to check
-            event.preventDefault();
-            move_player_horizontally();
+            if (document.getElementById("score").style.display != "none") {
+                move_player_horizontally("right");
+            }
             break;
         case " ":
         case "w":
@@ -112,29 +113,30 @@ function forward_event_handler() {
     }
 }
 
-function update_score() {
-    score = document.querySelector(".score");
-    score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
-}
-
-function move_player_horizontally() {
+function move_player_horizontally(direction) {
     const game_area = document.getElementById("game-area")
     const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
     const game_area_width = game_area.clientWidth; /* Game area width */
-    player = document.getElementById("player");
+    const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
     let player_position_int = parseInt(player_position);
 
     max_position = game_area_width - 80;
-    console.log("Max pos: ", max_position);
-    console.log("Current pos: ", player_position);
-    console.log("Current pos (int): ", player_position_int);
+    min_position = 20;
+    let increment = 30;
 
-    if (player_position_int >= max_position) {
+    if (direction == "left") {
+        increment = -increment;
+    }
+
+    if (player_position_int > max_position) {
         player_position_int = max_position;
     }
+    else if (player_position_int < min_position) {
+        player_position_int = min_position;
+    }
     else {
-        player_position_int += 10;
+        player_position_int += increment;
     }
     player.style.left = player_position_int + "px";
 }
