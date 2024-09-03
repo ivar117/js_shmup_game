@@ -96,17 +96,17 @@ function forward_event_handler() {
         }, 1000)
     }
     else { /* Shoot projectile */
-        if (!document.getElementById("projectile")) { /* If no projectile is present in the DOM */
+        if (!document.getElementById("projectile")) { // If no projectile is present in the DOM
             const projectile = document.createElement("img");
             projectile.src = "images/components/projectile.svg";
-            projectile.width = 12;
+            projectile.style.width = "1.5vmin";
             projectile.id = "projectile";
             projectile.alt = "Projectile";
             game_area.appendChild(projectile);
 
             const projectile_animation_time = 500;
-            const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
-            const game_area_width = game_area.clientWidth; /* Game area width */
+            const game_area_height = game_area.clientHeight + 100; // Game area height, add a bit more height so the projectile moves out of bounds
+            const game_area_width = game_area.clientWidth; // Game area width
 
             const player = document.getElementById("player");
             const player_computed_style = window.getComputedStyle(player);
@@ -116,7 +116,7 @@ function forward_event_handler() {
             const player_position = parseFloat(player_computed_style.left);
             projectile.style.left = player_position + (player_width / 2) - (projectile_width / 2) + "px";
 
-            projectile.style.marginBottom = `${player_height+60}px`; /* Start on top of the player */
+            projectile.style.marginBottom = `${player_height+60}px`; // Start on top of the player
 
             const keyframes = [
                     { transform: "translateY(100%)" },  // Start below the visible area
@@ -193,7 +193,7 @@ function toggle_audio() {
 
     setTimeout(() => {
         const mute_state = localStorage.getItem('audio_mute_state');
-        if (mute_state === null) { /* If not previously cached */
+        if (mute_state === null) { // If not previously cached
             localStorage.setItem("audio_mute_state", "false")
         }
 
@@ -219,7 +219,7 @@ function init_audio_icon() {
     audio_control_icon.id = "audio-control-icon"
 
     const mute_state = localStorage.getItem('audio_mute_state');
-    if (mute_state === null) { /* If not previously cached */
+    if (mute_state === null) { // If not previously cached
         localStorage.setItem("audio_mute_state", "false")
     }
 
@@ -267,17 +267,17 @@ function create_asteroid() {
     const game_area = document.getElementById("game-area")
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
-    asteroid.style.width = "7%";
+    asteroid.style.width = "9vmin";
     asteroid.id = "asteroid";
     asteroid.alt = "Asteroid";
     game_area.appendChild(asteroid);
     
-    const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
-    const game_area_width = game_area.clientWidth; /* Game area width */
-    const asteroid_height = asteroid.clientHeight; // Height of the asteroid image
+    const game_area_height = game_area.clientHeight; // Game area height, add a bit more height so the projectile moves out of bounds
+    const game_area_width = game_area.clientWidth; // Game area width
+    const asteroid_height = asteroid.clientHeight;
     const asteroid_animation_time = 4000;
 
-    // Calculate how far to move the asteroid during the animation
+    /* Calculate how far to move the asteroid during the animation */
     const distance_to_move = game_area_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
     
     vertical_placement = Math.floor(Math.random() * ((game_area_width - 60) - 1));

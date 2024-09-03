@@ -29,7 +29,6 @@ button.invert-colors {
     margin-right: auto;
     margin-left: auto;
     width: 70vw;
-    scale: 95%;
 }
 
 .game-area-container .items {
@@ -59,13 +58,14 @@ button.invert-colors {
 }
 
 .start-text {
-    font-size: 3vw;
+    font-size: 5.5vmin;
     color: white;
     filter: invert(10%);
     font-weight: bold;
-    /*margin: auto;*/
     position: absolute;
     bottom: 50%;
+    text-align: center;
+    min-width: 80%;
 }
 
 button.audio, button.invert-colors {
@@ -115,6 +115,7 @@ button.audio {
     filter: invert(10%);
     z-index: 2;
     position: absolute;
+    width: 9vmin;
 }
 
 #asteroid {
