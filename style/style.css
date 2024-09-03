@@ -59,7 +59,7 @@ button.invert-colors {
 }
 
 .start-text {
-    font-size: 32pt;
+    font-size: 3vw;
     color: white;
     filter: invert(10%);
     font-weight: bold;

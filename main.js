@@ -7,15 +7,30 @@ var asteroid_last_placement;
 // No
 // YES?!!!!
 
-document.addEventListener("keydown", e => {
-    handle_key_event(e, e.key);
-});
+const initial_key_eventhandler = function(event) {
+    const excludedKeys = ["Alt", "Control", "Meta", "Escape"]; // Add any keys you want to exclude
+
+    if (excludedKeys.includes(event.key)) {
+        // If the pressed key is in the excluded list, do nothing
+        return;
+    }
+
+	document.body.removeEventListener("keydown", initial_key_eventhandler);
+    forward_event_handler();
+    requestAnimationFrame(() => {
+        document.addEventListener("keydown", e => {
+            handle_key_event(e, e.key);
+        });
+    });
+}
+
+document.body.addEventListener("keydown", initial_key_eventhandler);
 
 function handle_key_event(event, key) {
     switch (key) {
         case "ArrowLeft":
         case "a":
-            if (document.getElementById("score").style.display != "none") {
+            if (document.getElementById("score").style.display != "none") { /* If the player has not yet started */
                 move_player_horizontally("left");
             }
             break;
@@ -63,7 +78,7 @@ function forward_event_handler() {
             projectile.alt = "Projectile";
             game_area.appendChild(projectile);
 
-            const projectile_animation_time = 700;
+            const projectile_animation_time = 500;
             const game_area_height = game_area.clientHeight + 100; /* Game area height, add a bit more height so the projectile moves out of bounds */
             const game_area_width = game_area.clientWidth; /* Game area width */
 

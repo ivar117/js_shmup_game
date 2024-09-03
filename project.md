@@ -7,6 +7,8 @@
 * [ ] Olika charges, så kan skjuta flera små, eller väntar till stor laser xd.
 * [ ] AI på enemies så de gömmer sig bakom asteroider o peaker från dem.
 * [ ] Gör asteroid "mindre random", så den ska hamna på olika platser, så baserar random vart den kommer hamna på vilken x-kordinat den senast spawnade från, den måste vara ett visst avstånd ifrån det xd.
+* [ ] Optimisera så att den har en separat key eventlistener i början för "Press any key to start";
+* [ ] Eventlistener på screen size change, för att då justera så att player hamnar i nya mitten av game area
 
 ## Music idéer
 * Kanske en "dunk-dunk (paus) dunk-dunk" för bass drum istället för snabb o konstant. Eller bara mycke långsammare.
