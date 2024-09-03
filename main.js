@@ -4,53 +4,79 @@ var max_position = 10;
 var min_position = 1;
 var speed; //Maybe?
 var asteroid_last_placement;
-// No
-// YES?!!!!
+let is_gameloop_running = false;
 
+const key_states = {};
+const key_cooldowns = {};
+const COOLDOWN_TIME = 60;
+
+/* Function to handle the initial key event */
 const initial_key_eventhandler = function(event) {
-    const excludedKeys = ["Alt", "Control", "Meta", "Escape"]; // Add any keys you want to exclude
+    const excludedKeys = ["Alt", "Control", "Meta", "Escape"];
 
     if (excludedKeys.includes(event.key)) {
-        // If the pressed key is in the excluded list, do nothing
         return;
     }
 
 	document.body.removeEventListener("keydown", initial_key_eventhandler);
     forward_event_handler();
     requestAnimationFrame(() => {
-        document.addEventListener("keydown", e => {
-            handle_key_event(e, e.key);
-        });
+        document.body.addEventListener("keydown", key_down_handler);
+        document.body.addEventListener("keyup", key_up_handler);
     });
 }
 
 document.body.addEventListener("keydown", initial_key_eventhandler);
 
-function handle_key_event(event, key) {
-    switch (key) {
-        case "ArrowLeft":
-        case "a":
-            if (document.getElementById("score").style.display != "none") { /* If the player has not yet started */
-                move_player_horizontally("left");
-            }
-            break;
-        case "ArrowRight":
-        case "d":
-            if (document.getElementById("score").style.display != "none") {
-                move_player_horizontally("right");
-            }
-            break;
-        case " ":
-        case "w":
-        case "ArrowUp":
-            event.preventDefault();
-            forward_event_handler();
-            break;
+const key_down_handler = function(event) {
+    key_states[event.key] = true;
+
+    /* Start the game loop if not already running */
+    if (!is_gameloop_running) {
+        is_gameloop_running = true;
+        game_loop();
+    }
+}
+
+const key_up_handler = function(event) {
+    /* remove key states and cooldowns */
+    delete key_states[event.key];
+    delete key_cooldowns[event.key];
+}
+
+function game_loop() {
+    const currentTime = Date.now();
+
+    /* process key states */
+    if ((key_states["a"] || key_states["arrowleft"])
+        && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
+        if (document.getElementById("score").style.display != "none") {
+            move_player_horizontally("left");
+            key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
+        }
+    }
+
+    if ((key_states["d"] || key_states["arrowright"])
+        && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
+        if (document.getElementById("score").style.display != "none") {
+            move_player_horizontally("right");
+            key_cooldowns["right"] = currentTime + COOLDOWN_TIME;
+        }
+    }
+
+    if ((key_states["w"] || key_states[" "] || key_states["arrowup"])
+        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
+        forward_event_handler();
+        key_cooldowns["forward"] = currentTime + COOLDOWN_TIME;
+    }
+
+    /* request the next frame */
+    if (is_gameloop_running) {
+        requestAnimationFrame(game_loop);
     }
 }
 
 function forward_event_handler() {
-    //refresh_gui();
     const score_element = document.getElementById("score");
     game_area = document.getElementById("game-area");
     if (score_element.style.display === "none") { // Only run at initialization
@@ -119,15 +145,15 @@ function forward_event_handler() {
 
 function move_player_horizontally(direction) {
     const game_area = document.getElementById("game-area")
-    const game_area_height = game_area.clientHeight; /* Game area height, add a bit more height so the projectile moves out of bounds */
-    const game_area_width = game_area.clientWidth; /* Game area width */
+    const game_area_height = game_area.clientHeight; // Game area height, add a bit more height so the projectile moves out of bounds
+    const game_area_width = game_area.clientWidth; // Game area width
     const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
     let player_position_int = parseInt(player_position);
 
     max_position = game_area_width - 80;
     min_position = 20;
-    let increment = 30;
+    let increment = 50;
 
     if (direction == "left") {
         increment = -increment;
