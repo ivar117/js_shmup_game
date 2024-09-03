@@ -130,6 +130,11 @@ function move_player_horizontally(direction) {
     player.style.left = player_position_int + "px";
 }
 
+function update_score() {
+    score = document.querySelector(".score");
+    score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
+}
+
 function toggle_audio() {
     const path = "images/components/";
     const audio_button = document.getElementById("audio-control");
