@@ -48,7 +48,7 @@ function game_loop() {
     const currentTime = Date.now();
 
     /* process key states */
-    if ((key_states["a"] || key_states["arrowleft"])
+    if ((key_states["a"] || key_states["ArrowLeft"])
         && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
         if (document.getElementById("score").style.display != "none") {
             move_player_horizontally("left");
@@ -56,7 +56,7 @@ function game_loop() {
         }
     }
 
-    if ((key_states["d"] || key_states["arrowright"])
+    if ((key_states["d"] || key_states["ArrowRight"])
         && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
         if (document.getElementById("score").style.display != "none") {
             move_player_horizontally("right");
@@ -64,7 +64,7 @@ function game_loop() {
         }
     }
 
-    if ((key_states["w"] || key_states[" "] || key_states["arrowup"])
+    if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
         && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
         forward_event_handler();
         key_cooldowns["forward"] = currentTime + COOLDOWN_TIME;
