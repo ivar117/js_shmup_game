@@ -1,20 +1,23 @@
 var current_score = 0;
-var position = 5;
-var max_position = 10;
-var min_position = 1;
-var speed; //Maybe?
 var asteroid_last_placement;
 let is_gameloop_running = false;
 
-const key_states = {};
+const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
 const COOLDOWN_TIME = 60;
 
+let Engine = Matter.Engine; // Physics engine
+
+let render = Matter.Render.create({
+    element: document.getElementById("game-area"),
+    engine:Engine
+})
+
 /* Function to handle the initial key event */
 const initial_key_eventhandler = function(event) {
-    const excludedKeys = ["Alt", "Control", "Meta", "Escape"];
+    const excluded_keys = ["Alt", "Control", "Meta", "Escape"];
 
-    if (excludedKeys.includes(event.key)) {
+    if (excluded_keys.includes(event.key)) {
         return;
     }
 
@@ -82,7 +85,7 @@ function forward_event_handler() {
     if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
-        game_area.style.animation = "moveBackground 0.5s linear infinite";
+        game_area.style.animation = "moveBackground 1.0s linear infinite";
         /* Turn on the music! */
         const audio_element = document.getElementById("audio-element");
         audio_element.play();
@@ -105,8 +108,7 @@ function forward_event_handler() {
             game_area.appendChild(projectile);
 
             const projectile_animation_time = 500;
-            const game_area_height = game_area.clientHeight + 100; // Game area height, add a bit more height so the projectile moves out of bounds
-            const game_area_width = game_area.clientWidth; // Game area width
+            const game_area_height = game_area.clientHeight + 100; // Game area height, add extra height for the projectile to move out of bounds
 
             const player = document.getElementById("player");
             const player_computed_style = window.getComputedStyle(player);
@@ -123,10 +125,9 @@ function forward_event_handler() {
                     { transform: "translateY(-" + game_area_height + "px)", visibility: "hidden" } // Move across the game area
             ];
 
-
             const options = {
-                   duration: projectile_animation_time, // Animation duration in milliseconds
-                   fill: "forwards" // Keep the last keyframe after finishing
+                   duration: projectile_animation_time,
+                   fill: "forwards"
             };
 
             projectile.style.visibility = "visible";
@@ -134,18 +135,17 @@ function forward_event_handler() {
 
             setTimeout(() => {
                 projectile.style.visibility = "hidden";
-                projectile.style.animation = ""; // Reset animation
+                projectile.style.animation = "";
                 projectile.remove();
                 current_score++;
                 update_score();
-            }, projectile_animation_time);
+            }, projectile_animation_time)
         }
     }
 }
 
 function move_player_horizontally(direction) {
     const game_area = document.getElementById("game-area")
-    const game_area_height = game_area.clientHeight; // Game area height, add a bit more height so the projectile moves out of bounds
     const game_area_width = game_area.clientWidth; // Game area width
     const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
@@ -272,8 +272,8 @@ function create_asteroid() {
     asteroid.alt = "Asteroid";
     game_area.appendChild(asteroid);
     
-    const game_area_height = game_area.clientHeight; // Game area height, add a bit more height so the projectile moves out of bounds
-    const game_area_width = game_area.clientWidth; // Game area width
+    const game_area_height = game_area.clientHeight;
+    const game_area_width = game_area.clientWidth;
     const asteroid_height = asteroid.clientHeight;
     const asteroid_animation_time = 4000;
 
@@ -284,13 +284,13 @@ function create_asteroid() {
     asteroid.style.left = vertical_placement + "px";
 
     const keyframes = [
-        { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Move the asteroid upward beyond the view
+        { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
         { transform: `translateY(${game_area_height}px) rotate(360deg)` } // Move it down past the bottom
     ];
 
     const options = {
-        duration: asteroid_animation_time, // Animation duration in milliseconds
-        fill: "forwards" // Keep the last keyframe after finishing
+        duration: asteroid_animation_time,
+        fill: "forwards"
     };
 
     asteroid.animate(keyframes, options);
