@@ -6,11 +6,17 @@ const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
 const COOLDOWN_TIME = 60;
 
-let Engine = Matter.Engine; // Physics engine
+var Engine = Matter.Engine; // Physics engine
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite;
 
-let render = Matter.Render.create({
+var engine = Engine.create();
+
+var render = Render.create({
     element: document.getElementById("game-area"),
-    engine:Engine
+    engine:engine
 })
 
 /* Function to handle the initial key event */
