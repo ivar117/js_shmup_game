@@ -46,11 +46,11 @@ button.invert-colors {
     align-items: flex-end;
     overflow: hidden;
     border: 17px solid #4e4e4e;
-    border-radius: 10px;
+    border-radius: 20px;
     background-image: url("../images/stars.jpg");
     /*background-repeat: repeat-y;*/
     background-repeat:space;
-    background-size: cover;
+    background-size: 90%;
     background-attachment: fixed;
     position: relative; /* Items are relative to the game area */
     height: 80vh;

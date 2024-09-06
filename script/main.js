@@ -85,7 +85,7 @@ function forward_event_handler() {
     if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
-        game_area.style.animation = "moveBackground 1.0s linear infinite";
+        game_area.style.animation = "moveBackground 2.0s linear infinite";
         /* Turn on the music! */
         const audio_element = document.getElementById("audio-element");
         audio_element.play();
