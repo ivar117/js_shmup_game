@@ -12,27 +12,148 @@ var Engine = Matter.Engine; // Physics engine
     Bodies = Matter.Bodies,
     Composite = Matter.Composite;
 
-var engine = Engine.create();
+var game_area = document.getElementById('game-area')
+const game_area_height = game_area.clientHeight;
+const game_area_width = game_area.clientWidth;
 
-var render = Render.create({
-    element: document.getElementById("game-area"),
-    engine:engine
-})
+const engine = Engine.create();
+const render = Render.create({
+    element: game_area,
+    engine: engine,
+    options: {
+        width: game_area_width,
+        height: game_area_height,
+        showAngleIndicator: false,
+        showCollisions: true,
+        showSeparations: true,
+        background: 'none',
+        wireframes: false
+    }
+});
+
+var runner = Runner.create();
+Runner.run(runner, engine);
+Render.run(render);
+
+// Create player body (assuming you already have a player in the DOM)
+//var playerBody = Bodies.rectangle(400, 550, 50, 30, {
+    //isStatic: true,
+    //render: {
+        //fillStyle: '#FF0000' // Change this to your desired color in hex format
+    //}
+//});
+//Composite.add(engine.world, playerBody);
+
+// Function to create enemies
+function createEnemy() {
+    var enemy = Bodies.rectangle(Math.random() * 800, 0, 80, 30, { 
+        isStatic: false,
+        label: 'enemy'
+    });
+    Composite.add(engine.world, enemy);
+    
+    // Animate enemy movement downward
+    Matter.Body.setVelocity(enemy, { x: 0, y: 0.5 }); // Set downward velocity
+
+    // Remove enemy after they go out of view
+    setTimeout(() => {
+        Composite.remove(engine.world, enemy);
+    }, 4000); // Remove after 4 seconds
+}
+
+// Create a shooting projectile
+function shootProjectile() {
+    if (!document.getElementById("projectile")) {
+        //const projectile = document.createElement("img");
+        //projectile.src = "images/components/projectile.svg";
+        //projectile.style.width = "1.5vmin";
+        //projectile.id = "projectile";
+        //projectile.alt = "Projectile";
+
+        const player = document.getElementById("player");
+        const player_computed_style = window.getComputedStyle(player);
+        const player_height = parseInt(player_computed_style.height);
+        const player_width = parseFloat(player_computed_style.width);
+        //const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
+        const player_position = parseFloat(player_computed_style.left);
+        const x_pos = player_position + (player_width / 2);
+        //const y_pos = player_height; // Start on top of the player
+        const y_pos = game_area_height - player_height;
+        
+        var projectile = Bodies.fromVertices(x_pos, y_pos, Matter.Svg.pathToVertices("images/components/projectile.svg"), {
+            isStatic: false,
+            label: 'projectile'
+        });
+
+        /* var projectile = Bodies.rectangle(x_pos, y_pos, 5, 25, { 
+            isStatic: false,
+            label: 'projectile'
+        }); */
+
+        Composite.add(engine.world, projectile);
+        Matter.Body.setVelocity(projectile, { x: 0, y: 1 }); // Move projectile upward
+
+        // Remove projectile after a timeout
+        setTimeout(() => {
+            Composite.remove(engine.world, projectile);
+        }, 2000)
+    }
+}
+
+// Collision detection to check if projectile hits an enemy
+Matter.Events.on(engine, 'collisionStart', function(event) {
+    var pairs = event.pairs;
+    pairs.forEach(pair => {
+        var bodyA = pair.bodyA;
+        var bodyB = pair.bodyB;
+
+        // Check for collision between projectile and enemy
+        if ((bodyA.label === 'projectile' && bodyB.label === 'enemy') || 
+            (bodyA.label === 'enemy' && bodyB.label === 'projectile')) {
+            // Handle the collision, e.g., removing the enemy and projectile
+            Composite.remove(engine.world, bodyA);
+            Composite.remove(engine.world, bodyB);
+            current_score++; // Increment score
+            update_score(); // Update score display
+        }
+    });
+});
+
+// Example function to start enemy creation at intervals
+function startEnemySpawn() {
+    setInterval(createEnemy, 2000); // Create an enemy every 2 seconds
+}
+
+// Call the functions to start the game
+//document.body.addEventListener("keydown", function(event) {
+    //if (event.key === ' ') { // Spacebar to shoot
+        //shootProjectile();
+    //}
+//});
+
+
+// Call function to start enemies
+
+// Start the game loop
+//requestAnimationFrame(game_loop);
 
 /* Function to handle the initial key event */
 const initial_key_eventhandler = function(event) {
-    const excluded_keys = ["Alt", "Control", "Meta", "Escape"];
+    //const excluded_keys = ["Alt", "Control", "Meta", "Escape"];
 
-    if (excluded_keys.includes(event.key)) {
-        return;
+    //if (excluded_keys.includes(event.key)) {
+        //return;
+    //}
+    if (event.key === "w" || event.key === " " || event.key === "ArrowUp") {
+        startEnemySpawn();
+
+	    document.body.removeEventListener("keydown", initial_key_eventhandler);
+        forward_event_handler();
+        requestAnimationFrame(() => {
+            document.body.addEventListener("keydown", key_down_handler);
+            document.body.addEventListener("keyup", key_up_handler);
+        });
     }
-
-	document.body.removeEventListener("keydown", initial_key_eventhandler);
-    forward_event_handler();
-    requestAnimationFrame(() => {
-        document.body.addEventListener("keydown", key_down_handler);
-        document.body.addEventListener("keyup", key_up_handler);
-    });
 }
 
 document.body.addEventListener("keydown", initial_key_eventhandler);
@@ -73,10 +194,15 @@ function game_loop() {
         }
     }
 
-    if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
+    //if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
+    if ((key_states["w"] || key_states["ArrowUp"])
         && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
         forward_event_handler();
         key_cooldowns["forward"] = currentTime + COOLDOWN_TIME;
+    }
+
+    if (key_states[" "]) { // Spacebar to shoot
+        shootProjectile();
     }
 
     /* request the next frame */

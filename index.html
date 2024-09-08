@@ -8,9 +8,6 @@
 	    <title>Shmup Game</title>
     </head>
     <body>
-        <script src="script/matter.js"></script>
-        <script src="script/main.js"></script>
-
         <header id="topnav">
             <button class="invert-colors" id="invert-colors" onclick="toggle_invert_color()">
                 <img id="invert-colors-icon" src="images/components/dark_mode.svg">
@@ -32,10 +29,12 @@
                 </div>
             </div>
             <div class="game-area" id="game-area">
-                <div class="start-text" id="start-text">Press any key to start</div>
+                <div class="start-text" id="start-text">Press w to start</div>
                 <img src="images/components/whitebox.svg" id="player" alt="Player">
             </div>
         </div>
-
+        <script src="script/matter.js"></script>
+        <script src="script/pathseg.js"></script>
+        <script src="script/main.js"></script>
     </body>
 </html>
