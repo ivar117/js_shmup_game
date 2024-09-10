@@ -64,12 +64,15 @@ function createEnemy() {
 // Create a shooting projectile
 function shootProjectile() {
     if (!document.getElementById("projectile")) {
+        const game_area = document.getElementById("game-area");
         const projectile = document.createElement("img");
         projectile.src = "images/components/projectile.png";
         projectile.onload = function() {
             projectile.style.width = "1.5vmin";
             projectile.id = "projectile";
             projectile.alt = "Projectile";
+            projectile.style.visibility = "hidden";
+            game_area.appendChild(projectile);
 
             const player = document.getElementById("player");
             const player_computed_style = window.getComputedStyle(player);
@@ -77,35 +80,29 @@ function shootProjectile() {
             const player_width = parseFloat(player_computed_style.width);
             const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
             const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
+            console.log(projectile_width, projectile_height);
+
             const player_position = parseFloat(player_computed_style.left);
             const x_pos = player_position + (player_width / 2);
             //const y_pos = player_height; // Start on top of the player
             const y_pos = game_area_height - player_height;
         
-            const projectile_body = Bodies.rectangle(x_pos, y_pos, projectile_width, projectile_height, {
-                 render: { 
+            const projectile_body = Bodies.rectangle(x_pos, y_pos, projectile_width*0.8, projectile_height*0.8, {
+                isStatic: false,
+                label: "projectile",
+                render: { 
                      sprite: {
                          texture: "images/components/projectile.png",
-                        //  xScale: projectile_width / projectile_width, // Adjust the scale as needed
-                        //  yScale: projectile_height / projectile_height
-                        xScale: 1.0,
-                        yScale: 1.0
                      }
                  }
             });
-        
-            // var projectile_body = Bodies.rectangle(x_pos, y_pos, 5, 25, { 
-            //     isStatic: false,
-            //     label: 'projectile_body'
-            // });
 
             Composite.add(engine.world, projectile_body);
-            Matter.Body.setVelocity(projectile_body, { x: 0, y: -10 }); // Move projectile_body upward
+            Matter.Body.setVelocity(projectile_body, { x: 0, y: -30 }); // Move projectile_body upward
 
-            // Remove projectile_body after a timeout
             setTimeout(() => {
-                Composite.remove(engine.world, projectile_body);
                 projectile.remove();
+                Composite.remove(engine.world, projectile_body);
             }, 2000)
         };
     }
