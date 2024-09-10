@@ -64,39 +64,50 @@ function createEnemy() {
 // Create a shooting projectile
 function shootProjectile() {
     if (!document.getElementById("projectile")) {
-        //const projectile = document.createElement("img");
-        //projectile.src = "images/components/projectile.svg";
-        //projectile.style.width = "1.5vmin";
-        //projectile.id = "projectile";
-        //projectile.alt = "Projectile";
+        const projectile = document.createElement("img");
+        projectile.src = "images/components/projectile.png";
+        projectile.onload = function() {
+            projectile.style.width = "1.5vmin";
+            projectile.id = "projectile";
+            projectile.alt = "Projectile";
 
-        const player = document.getElementById("player");
-        const player_computed_style = window.getComputedStyle(player);
-        const player_height = parseInt(player_computed_style.height);
-        const player_width = parseFloat(player_computed_style.width);
-        //const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
-        const player_position = parseFloat(player_computed_style.left);
-        const x_pos = player_position + (player_width / 2);
-        //const y_pos = player_height; // Start on top of the player
-        const y_pos = game_area_height - player_height;
+            const player = document.getElementById("player");
+            const player_computed_style = window.getComputedStyle(player);
+            const player_height = parseInt(player_computed_style.height);
+            const player_width = parseFloat(player_computed_style.width);
+            const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
+            const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
+            const player_position = parseFloat(player_computed_style.left);
+            const x_pos = player_position + (player_width / 2);
+            //const y_pos = player_height; // Start on top of the player
+            const y_pos = game_area_height - player_height;
         
-        var projectile = Bodies.fromVertices(x_pos, y_pos, Matter.Svg.pathToVertices("images/components/projectile.svg"), {
-            isStatic: false,
-            label: 'projectile'
-        });
+            const projectile_body = Bodies.rectangle(x_pos, y_pos, projectile_width, projectile_height, {
+                 render: { 
+                     sprite: {
+                         texture: "images/components/projectile.png",
+                        //  xScale: projectile_width / projectile_width, // Adjust the scale as needed
+                        //  yScale: projectile_height / projectile_height
+                        xScale: 1.0,
+                        yScale: 1.0
+                     }
+                 }
+            });
+        
+            // var projectile_body = Bodies.rectangle(x_pos, y_pos, 5, 25, { 
+            //     isStatic: false,
+            //     label: 'projectile_body'
+            // });
 
-        /* var projectile = Bodies.rectangle(x_pos, y_pos, 5, 25, { 
-            isStatic: false,
-            label: 'projectile'
-        }); */
+            Composite.add(engine.world, projectile_body);
+            Matter.Body.setVelocity(projectile_body, { x: 0, y: -10 }); // Move projectile_body upward
 
-        Composite.add(engine.world, projectile);
-        Matter.Body.setVelocity(projectile, { x: 0, y: 1 }); // Move projectile upward
-
-        // Remove projectile after a timeout
-        setTimeout(() => {
-            Composite.remove(engine.world, projectile);
-        }, 2000)
+            // Remove projectile_body after a timeout
+            setTimeout(() => {
+                Composite.remove(engine.world, projectile_body);
+                projectile.remove();
+            }, 2000)
+        };
     }
 }
 
