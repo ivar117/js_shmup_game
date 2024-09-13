@@ -20,7 +20,7 @@ const engine = Engine.create();
 const render = Render.create({
     element: game_area,
     engine: engine,
-    options: {
+    options: { // TODO: width and height are not dynamic
         width: game_area_width,
         height: game_area_height,
         showAngleIndicator: false,
@@ -36,13 +36,17 @@ Runner.run(runner, engine);
 Render.run(render);
 
 // Create player body (assuming you already have a player in the DOM)
-//var playerBody = Bodies.rectangle(400, 550, 50, 30, {
-    //isStatic: true,
-    //render: {
-        //fillStyle: '#FF0000' // Change this to your desired color in hex format
-    //}
-//});
-//Composite.add(engine.world, playerBody);
+var playerBody = Bodies.rectangle(400, 550, 50, 30, {
+    isStatic: true,
+    label: "player",
+    render: {
+        sprite: {
+            texture: "images/components/whitebox.svg"
+        }
+    }
+});
+
+Composite.add(engine.world, playerBody);
 
 // Function to create enemies
 function createEnemy() {
