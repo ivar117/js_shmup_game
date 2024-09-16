@@ -36,23 +36,27 @@ Runner.run(runner, engine);
 Render.run(render);
 
 // Create player body (assuming you already have a player in the DOM)
-var playerBody = Bodies.rectangle(400, 550, 50, 30, {
-    isStatic: true,
-    label: "player",
-    render: {
-        sprite: {
-            texture: "images/components/whitebox.svg"
-        }
-    }
-});
+// var playerBody = Bodies.rectangle(400, 550, 50, 30, {
+//     isStatic: true,
+//     label: "player",
+//     render: {
+//         sprite: {
+//             texture: "images/components/whitebox.svg"
+//         }
+//     }
+// });
 
-Composite.add(engine.world, playerBody);
+// Composite.add(engine.world, playerBody);
 
 // Function to create enemies
 function createEnemy() {
-    var enemy = Bodies.rectangle(Math.random() * 800, 0, 80, 30, { 
-        isStatic: false,
-        label: 'enemy'
+    var enemy = Bodies.rectangle(Math.random() * 800, 50, 80, 30, { 
+        isStatic: true,
+        label: 'enemy',
+        health: 2,
+        render: {
+            fillStyle: "red"
+        }
     });
     Composite.add(engine.world, enemy);
     
@@ -67,7 +71,7 @@ function createEnemy() {
 
 // Create a shooting projectile
 function shootProjectile() {
-    if (!document.getElementById("projectile")) {
+    // if (!document.getElementById("projectile")) {
         const game_area = document.getElementById("game-area");
         const projectile = document.createElement("img");
         projectile.src = "images/components/projectile.png";
@@ -102,14 +106,14 @@ function shootProjectile() {
             });
 
             Composite.add(engine.world, projectile_body);
-            Matter.Body.setVelocity(projectile_body, { x: 0, y: -30 }); // Move projectile_body upward
+            Matter.Body.setVelocity(projectile_body, { x: 0, y: -40 }); // Move projectile_body upward
 
             setTimeout(() => {
                 projectile.remove();
                 Composite.remove(engine.world, projectile_body);
             }, 2000)
         };
-    }
+    // }
 }
 
 // Collision detection to check if projectile hits an enemy
@@ -123,10 +127,20 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
         if ((bodyA.label === 'projectile' && bodyB.label === 'enemy') || 
             (bodyA.label === 'enemy' && bodyB.label === 'projectile')) {
             // Handle the collision, e.g., removing the enemy and projectile
-            Composite.remove(engine.world, bodyA);
-            Composite.remove(engine.world, bodyB);
-            current_score++; // Increment score
-            update_score(); // Update score display
+            
+            // Determine which body is the enemy
+            var enemyBody = bodyA.label === 'enemy' ? bodyA : bodyB;
+            var projectileBody = bodyA.label === 'projectile' ? bodyA : bodyB;
+
+            
+            enemyBody.health--;
+            if (enemyBody.health <= 0) {
+                Composite.remove(engine.world, enemyBody);
+                current_score++; // Increment score
+                update_score(); // Update score display
+            }
+            // Composite.remove(engine.world, bodyA);
+            Composite.remove(engine.world, projectileBody);
         }
     });
 });
@@ -213,8 +227,10 @@ function game_loop() {
         key_cooldowns["forward"] = currentTime + COOLDOWN_TIME;
     }
 
-    if (key_states[" "]) { // Spacebar to shoot
+    if (key_states[" "]
+        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
         shootProjectile();
+        key_cooldowns["forward"] = currentTime + 300;
     }
 
     /* request the next frame */
