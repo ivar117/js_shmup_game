@@ -4,7 +4,10 @@ let is_gameloop_running = false;
 
 const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
-const COOLDOWN_TIME = 60;
+const distance_state = {};
+distance_state["left"] = 10;
+distance_state["right"] = 10;
+const COOLDOWN_TIME = 100;
 
 var Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -70,7 +73,7 @@ function createEnemy() {
 }
 
 // Create a shooting projectile
-function shootProjectile() {
+function shoot_projectile() {
     // if (!document.getElementById("projectile")) {
         const game_area = document.getElementById("game-area");
         const projectile = document.createElement("img");
@@ -150,19 +153,6 @@ function startEnemySpawn() {
     setInterval(createEnemy, 2000); // Create an enemy every 2 seconds
 }
 
-// Call the functions to start the game
-//document.body.addEventListener("keydown", function(event) {
-    //if (event.key === ' ') { // Spacebar to shoot
-        //shootProjectile();
-    //}
-//});
-
-
-// Call function to start enemies
-
-// Start the game loop
-//requestAnimationFrame(game_loop);
-
 /* Function to handle the initial key event */
 const initial_key_eventhandler = function(event) {
     //const excluded_keys = ["Alt", "Control", "Meta", "Escape"];
@@ -198,16 +188,25 @@ const key_up_handler = function(event) {
     /* remove key states and cooldowns */
     delete key_states[event.key];
     delete key_cooldowns[event.key];
+    distance_state["left"] = 10;
+    distance_state["right"] = 10;
 }
 
 function game_loop() {
     const currentTime = Date.now();
+    const max_distance = 80;
 
     /* process key states */
     if ((key_states["a"] || key_states["ArrowLeft"])
         && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("left");
+            move_player_horizontally("left", distance_state["left"]);
+
+            distance_state["left"] = Math.exp(distance_state["left"] * 0.5);
+            if (distance_state["left"] > 80) {
+                distance_state["left"] = 80;
+            }
+
             key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
         }
     }
@@ -215,21 +214,20 @@ function game_loop() {
     if ((key_states["d"] || key_states["ArrowRight"])
         && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("right");
+            move_player_horizontally("right", distance_state["right"]);
+
+            distance_state["right"] = Math.exp(distance_state["right"] * 0.5);
+            if (distance_state["right"] > 80) {
+                distance_state["right"] = 80;
+            }
+
             key_cooldowns["right"] = currentTime + COOLDOWN_TIME;
         }
     }
 
-    //if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
-    if ((key_states["w"] || key_states["ArrowUp"])
+    if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
         && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
         forward_event_handler();
-        key_cooldowns["forward"] = currentTime + COOLDOWN_TIME;
-    }
-
-    if (key_states[" "]
-        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
-        shootProjectile();
         key_cooldowns["forward"] = currentTime + 300;
     }
 
@@ -259,52 +257,11 @@ function forward_event_handler() {
         }, 1000)
     }
     else { /* Shoot projectile */
-        if (!document.getElementById("projectile")) { // If no projectile is present in the DOM
-            const projectile = document.createElement("img");
-            projectile.src = "images/components/projectile.svg";
-            projectile.style.width = "1.5vmin";
-            projectile.id = "projectile";
-            projectile.alt = "Projectile";
-            game_area.appendChild(projectile);
-
-            const projectile_animation_time = 500;
-            const game_area_height = game_area.clientHeight + 100; // Game area height, add extra height for the projectile to move out of bounds
-
-            const player = document.getElementById("player");
-            const player_computed_style = window.getComputedStyle(player);
-            const player_height = parseInt(player_computed_style.height);
-            const player_width = parseFloat(player_computed_style.width);
-            const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
-            const player_position = parseFloat(player_computed_style.left);
-            projectile.style.left = player_position + (player_width / 2) - (projectile_width / 2) + "px";
-
-            projectile.style.marginBottom = `${player_height+60}px`; // Start on top of the player
-
-            const keyframes = [
-                    { transform: "translateY(100%)" },  // Start below the visible area
-                    { transform: "translateY(-" + game_area_height + "px)", visibility: "hidden" } // Move across the game area
-            ];
-
-            const options = {
-                   duration: projectile_animation_time,
-                   fill: "forwards"
-            };
-
-            projectile.style.visibility = "visible";
-            projectile.animate(keyframes, options);
-
-            setTimeout(() => {
-                projectile.style.visibility = "hidden";
-                projectile.style.animation = "";
-                projectile.remove();
-                current_score++;
-                update_score();
-            }, projectile_animation_time)
-        }
+        shoot_projectile();
     }
 }
 
-function move_player_horizontally(direction) {
+function move_player_horizontally(direction, distance) {
     const game_area = document.getElementById("game-area")
     const game_area_width = game_area.clientWidth; // Game area width
     const player = document.getElementById("player");
@@ -313,10 +270,9 @@ function move_player_horizontally(direction) {
 
     max_position = game_area_width - 80;
     min_position = 20;
-    let increment = 50;
 
     if (direction == "left") {
-        increment = -increment;
+        distance = -distance;
     }
 
     if (player_position_int > max_position) {
@@ -326,7 +282,7 @@ function move_player_horizontally(direction) {
         player_position_int = min_position;
     }
     else {
-        player_position_int += increment;
+        player_position_int += distance;
     }
     player.style.left = player_position_int + "px";
 }
