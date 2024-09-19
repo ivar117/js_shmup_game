@@ -50,7 +50,7 @@ button.invert-colors {
     background-image: url("../images/stars.jpg");
     /*background-repeat: repeat-y;*/
     background-repeat:space;
-    background-size: 90%;
+    background-size: 100%;
     background-attachment: fixed;
     position: relative; /* Items are relative to the game area */
     height: 80vh;
