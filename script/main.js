@@ -176,7 +176,9 @@ const initial_key_eventhandler = function(event) {
     //if (excluded_keys.includes(event.key)) {
         //return;
     //}
-    if (event.type === "click" || (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
+    const fullscreen_state = document.getElementById("fullscreen-control");
+    if ((event.type === "click" && !fullscreen_state.contains(event.target))
+        || (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
         startEnemySpawn();
 
 	    document.body.removeEventListener("keydown", initial_key_eventhandler);
