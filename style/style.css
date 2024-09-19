@@ -57,6 +57,17 @@ button.invert-colors {
     flex-direction: row;
 }
 
+.game-area #fullscreen-control {
+    filter: invert(1);
+    width: 5%;
+    /* margin-bottom: auto; */
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
 .start-text {
     font-size: 5.5vmin;
     color: white;
@@ -74,6 +85,8 @@ button.audio, button.invert-colors {
 	border: none;
 	background: none;
     padding: 0;
+    /* rotate: -8deg; */
+    scale: 0.9;
 }
 
 button.audio {
@@ -86,7 +99,7 @@ button.audio {
 
 .score{
     font-weight: bold;
-    font-size: 32pt;
+    font-size: 2rem;
     margin-left: auto;
     margin-right: 5px;
 }

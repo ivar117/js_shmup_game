@@ -16,8 +16,8 @@ var Engine = Matter.Engine; // Physics engine
     Composite = Matter.Composite;
 
 var game_area = document.getElementById('game-area')
-const game_area_height = game_area.clientHeight;
-const game_area_width = game_area.clientWidth;
+let game_area_height = game_area.clientHeight;
+let game_area_width = game_area.clientWidth;
 
 const engine = Engine.create();
 const render = Render.create({
@@ -50,6 +50,29 @@ Render.run(render);
 // });
 
 // Composite.add(engine.world, playerBody);
+
+// Function to update render dimensions
+function updateRenderDimensions() {
+    // Get the current dimensions of the game area
+    game_area_width = game_area.clientWidth;
+    game_area_height = game_area.clientHeight;
+
+    // Update the render's dimensions
+    Render.setSize(render, game_area_width, game_area_height);
+
+    // Make the game_area fullscreen if it's too small
+    // if (game_area_width <= 700) {
+    //     game_area.requestFullscreen();
+    // }
+    // else if (game_area_width > 700) {  // Exit fullscreen if it's too large
+    //     document.exitFullscreen();
+    // }
+}
+
+// Resize event listener
+window.addEventListener('resize', () => {
+    updateRenderDimensions();
+});
 
 // Function to create enemies
 function createEnemy() {
@@ -160,10 +183,11 @@ const initial_key_eventhandler = function(event) {
     //if (excluded_keys.includes(event.key)) {
         //return;
     //}
-    if (event.key === "w" || event.key === " " || event.key === "ArrowUp") {
+    if (event.type === "click" || (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
         startEnemySpawn();
 
 	    document.body.removeEventListener("keydown", initial_key_eventhandler);
+	    game_area.removeEventListener("click", initial_key_eventhandler);
         forward_event_handler();
         requestAnimationFrame(() => {
             document.body.addEventListener("keydown", key_down_handler);
@@ -173,6 +197,7 @@ const initial_key_eventhandler = function(event) {
 }
 
 document.body.addEventListener("keydown", initial_key_eventhandler);
+game_area.addEventListener("click", initial_key_eventhandler);
 
 const key_down_handler = function(event) {
     key_states[event.key] = true;
@@ -292,40 +317,6 @@ function update_score() {
     score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
 }
 
-function toggle_audio() {
-    const path = "images/components/";
-    const audio_button = document.getElementById("audio-control");
-    const audio_control_icon = document.getElementById("audio-control-icon");
-    const audio_element = document.getElementById("audio-element");
-
-    audio_control_icon.alt = "Audio";
-    audio_button.style.pointerEvents = "none";
-
-    audio_control_icon.style.transition = "scale .2s"
-    audio_control_icon.style.scale = "1.15";
-    setTimeout(() => {
-        audio_control_icon.style.scale = "1.0"
-    }, 200);
-
-    setTimeout(() => {
-        const mute_state = localStorage.getItem('audio_mute_state');
-        if (mute_state === null) { // If not previously cached
-            localStorage.setItem("audio_mute_state", "false")
-        }
-
-        if (mute_state === "true") {
-            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
-            audio_element.muted = false;
-            localStorage.setItem("audio_mute_state", "false");
-        } else {
-            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
-            audio_element.muted = true;
-            localStorage.setItem("audio_mute_state", "true");
-        }
-        audio_button.style.pointerEvents = "auto";
-    }, 200);
-}
-
 function init_audio_icon() {
     const path = "images/components/";
     const audio_control_container = document.getElementById("audio-control");
@@ -334,7 +325,7 @@ function init_audio_icon() {
     audio_control_icon.style.width = "80%";
     audio_control_icon.id = "audio-control-icon"
 
-    const mute_state = localStorage.getItem('audio_mute_state');
+    const mute_state = localStorage.getItem("audio_mute_state");
     if (mute_state === null) { // If not previously cached
         localStorage.setItem("audio_mute_state", "false")
     }
@@ -352,6 +343,39 @@ function init_audio_icon() {
     audio_control_container.appendChild(audio_control_icon);
 }
 
+function toggle_audio() {
+    const path = "images/components/";
+    const audio_button = document.getElementById("audio-control");
+    const audio_control_icon = document.getElementById("audio-control-icon");
+    const audio_element = document.getElementById("audio-element");
+
+    audio_control_icon.alt = "Audio";
+    audio_button.style.pointerEvents = "none";
+
+    audio_control_icon.style.transition = "scale .2s"
+    audio_control_icon.style.scale = "1.15";
+    setTimeout(() => {
+        audio_control_icon.style.scale = "1.0"
+    }, 200);
+
+    setTimeout(() => {
+        const mute_state = localStorage.getItem("audio_mute_state");
+        if (mute_state === null) { // If not previously cached
+            localStorage.setItem("audio_mute_state", "false")
+        }
+
+        if (mute_state === "true") {
+            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
+            audio_element.muted = false;
+            localStorage.setItem("audio_mute_state", "false");
+        } else {
+            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
+            audio_element.muted = true;
+            localStorage.setItem("audio_mute_state", "true");
+        }
+        audio_button.style.pointerEvents = "auto";
+    }, 200);
+}
 
 function toggle_invert_color() {
     const icon = document.getElementById("invert-colors-icon");
@@ -419,3 +443,50 @@ function create_asteroid() {
 requestAnimationFrame(() => {
     init_audio_icon();
 })
+
+function set_fullscreen() {
+    const game_area = document.getElementById("game-area");
+    // const fullscreen_button = document.getElementById("fullscreen-control");
+    const fullscreen_icon = document.getElementById("fullscreen-icon");
+
+    if (fullscreen_icon.src.endsWith("fullscreen_enter.svg")) {
+        requestAnimationFrame(() => {
+            game_area.requestFullscreen();
+        });
+    }
+    else {
+        document.exitFullscreen();
+    }
+}
+
+const fullscreen_state = localStorage.getItem("fullscreen_state");
+if (fullscreen_state === null) { // If not previously cached
+    localStorage.setItem("fullscreen_state", "false");
+}
+else if (fullscreen_state == "true") { // If fullscreen was previously set to true
+    // game_area.requestFullscreen();
+    game_area.requestFullscreen().catch(err => {
+        console.error("Error attempting to enable full-screen mode:", err);
+    });
+}
+
+function handleFullscreenChange() {
+    const path = "images/components/";
+    const game_area = document.getElementById("game-area");
+    const fullscreen_icon = document.getElementById("fullscreen-icon");
+
+    if (document.fullscreenElement === game_area) {
+        // Game area is in fullscreen
+        fullscreen_icon.src = path + "fullscreen_exit.svg";
+        game_area.style.borderStyle = "none"; // Remove border
+        localStorage.setItem("fullscreen_state", "true")
+        // You can change your variables or styles here
+    } else {
+        // Game area has exited fullscreen
+        fullscreen_icon.src = path + "fullscreen_enter.svg";
+        game_area.style.borderStyle = "solid"; // Remove border
+        localStorage.setItem("fullscreen_state", "false")
+    }
+}
+
+document.addEventListener('fullscreenchange', handleFullscreenChange);
