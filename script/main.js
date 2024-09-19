@@ -59,14 +59,6 @@ function updateRenderDimensions() {
 
     // Update the render's dimensions
     Render.setSize(render, game_area_width, game_area_height);
-
-    // Make the game_area fullscreen if it's too small
-    // if (game_area_width <= 700) {
-    //     game_area.requestFullscreen();
-    // }
-    // else if (game_area_width > 700) {  // Exit fullscreen if it's too large
-    //     document.exitFullscreen();
-    // }
 }
 
 // Resize event listener
@@ -117,7 +109,8 @@ function shoot_projectile() {
             console.log(projectile_width, projectile_height);
 
             const player_position = parseFloat(player_computed_style.left);
-            const x_pos = player_position + (player_width / 2);
+            const x_pos = player_position + (player_width / 2) ;
+            //const x_pos = player_position + (player_width / 2) - (projectile_width / 2);
             //const y_pos = player_height; // Start on top of the player
             const y_pos = game_area_height - player_height;
         
@@ -490,3 +483,19 @@ function handleFullscreenChange() {
 }
 
 document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+let already_fullscreen = false;
+function toggleFullscreenBasedOnWindowSize() {
+    if (game_area_width <= 700 && !already_fullscreen) {
+        already_fullscreen = true;
+        game_area.requestFullscreen();
+    }
+    else if (game_area_width > 700 && already_fullscreen) {  // Exit fullscreen if it's too large
+        already_fullscreen = false;
+        document.exitFullscreen();
+    }
+}
+
+window.addEventListener('resize', () => {
+    toggleFullscreenBasedOnWindowSize();
+});
