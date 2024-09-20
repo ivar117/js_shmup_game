@@ -4,10 +4,11 @@ let is_gameloop_running = false;
 
 const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
-const distance_state = {};
-distance_state["left"] = 10;
-distance_state["right"] = 10;
-const COOLDOWN_TIME = 100;
+const velocity_state = {};
+const key_pressed = {};
+key_pressed["times"] = 0;
+velocity_state["current_velocity"] = 20;
+let COOLDOWN_TIME = 200;
 
 var Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -68,7 +69,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    var enemy = Bodies.rectangle(Math.random() * 800, 50, 80, 30, { 
+    var enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 80, 30, { 
         isStatic: true,
         label: 'enemy',
         health: 2,
@@ -208,9 +209,45 @@ const key_up_handler = function(event) {
     /* remove key states and cooldowns */
     delete key_states[event.key];
     delete key_cooldowns[event.key];
-    distance_state["left"] = 10;
-    distance_state["right"] = 10;
+    key_pressed["times"] = 0;
+    velocity_state["current_velocity"] = 20;
+    velocity_exp_factor = 0.5;
+    COOLDOWN_TIME = 200;
 }
+
+let velocity_exp_factor = 0.5;
+function increase_velocity(input) {
+    const max_velocity = 120
+
+    velocity_state["current_velocity"] = Math.exp(velocity_state["current_velocity"] * velocity_exp_factor);
+    if (velocity_state["current_velocity"] > max_velocity) {
+        velocity_state["current_velocity"] = max_velocity;
+    };
+    
+    if (velocity_exp_factor != 0.1) {
+        velocity_exp_factor -= 0.1;
+    };
+
+
+// function increase_velocity(input) {
+//     const acceleration = 0.5; // Define increase rate
+//     const deceleration = 0.5; // Define decrease rate
+//     const max_velocity = 80; // Define maximum velocity
+
+//     // Adjust velocity based on input (1 = increase, -1 = decrease)
+//     if (input === 1) {
+//         velocity_state["current_velocity"] += acceleration; // Increase
+//     } else if (input === -1) {
+//         velocity_state["current_velocity"] -= deceleration; // Decrease
+//     }
+
+//     // Cap velocity within max limits
+//     if (velocity_state["current_velocity"] > max_velocity) {
+//         velocity_state["current_velocity"] = max_velocity;
+//     } else if (velocity_state["current_velocity"] < 0) {
+//         velocity_state["current_velocity"] = 0; // Prevent negative velocity
+//     }
+// }
 
 function game_loop() {
     const currentTime = Date.now();
@@ -220,28 +257,30 @@ function game_loop() {
     if ((key_states["a"] || key_states["ArrowLeft"])
         && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("left", distance_state["left"]);
+            move_player_horizontally("left", velocity_state["current_velocity"]);
 
-            distance_state["left"] = Math.exp(distance_state["left"] * 0.5);
-            if (distance_state["left"] > 80) {
-                distance_state["left"] = 80;
-            }
+            increase_velocity(1);
 
             key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
+            key_pressed["times"] += 1;
+            if (key_pressed["times"] = 3) {
+                COOLDOWN_TIME = 100;
+            }
         }
     }
 
     if ((key_states["d"] || key_states["ArrowRight"])
         && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("right", distance_state["right"]);
+            move_player_horizontally("right", velocity_state["current_velocity"]);
 
-            distance_state["right"] = Math.exp(distance_state["right"] * 0.5);
-            if (distance_state["right"] > 80) {
-                distance_state["right"] = 80;
-            }
+            increase_velocity(1);
 
             key_cooldowns["right"] = currentTime + COOLDOWN_TIME;
+            key_pressed["times"] += 1;
+            if (key_pressed["times"] = 3) {
+                COOLDOWN_TIME = 100;
+            }
         }
     }
 
