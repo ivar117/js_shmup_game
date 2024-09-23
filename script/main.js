@@ -4,11 +4,10 @@ let is_gameloop_running = false;
 
 const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
+const click_states = {};
 const velocity_state = {};
-const key_pressed = {};
-key_pressed["times"] = 0;
 velocity_state["current_velocity"] = 20;
-let COOLDOWN_TIME = 200;
+let COOLDOWN_TIME = 100;
 
 var Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -69,7 +68,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    var enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 80, 30, { 
+    var enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 0.1*game_area_width, 30, {
         isStatic: true,
         label: 'enemy',
         health: 2,
@@ -188,6 +187,8 @@ const initial_key_eventhandler = function(event) {
         requestAnimationFrame(() => {
             document.body.addEventListener("keydown", key_down_handler);
             document.body.addEventListener("keyup", key_up_handler);
+            game_area.addEventListener("mousedown", click_down_handler);
+            game_area.addEventListener("mouseup", click_up_handler);
         });
     }
 }
@@ -209,26 +210,35 @@ const key_up_handler = function(event) {
     /* remove key states and cooldowns */
     delete key_states[event.key];
     delete key_cooldowns[event.key];
-    key_pressed["times"] = 0;
     velocity_state["current_velocity"] = 20;
     velocity_exp_factor = 0.5;
-    COOLDOWN_TIME = 200;
+    //COOLDOWN_TIME = 200;
 }
 
-let velocity_exp_factor = 0.5;
-function increase_velocity(input) {
-    const max_velocity = 120
+const click_down_handler = function(event) {
+    click_states[event.button] = true;
 
-    velocity_state["current_velocity"] = Math.exp(velocity_state["current_velocity"] * velocity_exp_factor);
+    if (!is_gameloop_running) {
+        is_gameloop_running = true;
+        game_loop();
+    }
+}
+
+const click_up_handler = function(event) {
+    delete click_states[event.button];
+}
+
+function increase_velocity(increment) {
+    const game_area_width = game_area.clientWidth; // Game area width
+    const max_velocity = game_area_width * 0.12213740458015267175
+
+    velocity_state["current_velocity"] += increment;
     if (velocity_state["current_velocity"] > max_velocity) {
         velocity_state["current_velocity"] = max_velocity;
     };
-    
-    if (velocity_exp_factor != 0.1) {
-        velocity_exp_factor -= 0.1;
-    };
+}
 
-
+// let velocity_exp_factor = 0.5;
 // function increase_velocity(input) {
 //     const acceleration = 0.5; // Define increase rate
 //     const deceleration = 0.5; // Define decrease rate
@@ -259,13 +269,10 @@ function game_loop() {
         if (document.getElementById("score").style.display != "none") {
             move_player_horizontally("left", velocity_state["current_velocity"]);
 
-            increase_velocity(1);
+            const game_area_width = game_area.clientWidth; // Game area width
+            increase_velocity(game_area_width * 0.03053435114503816793);
 
             key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
-            key_pressed["times"] += 1;
-            if (key_pressed["times"] = 3) {
-                COOLDOWN_TIME = 100;
-            }
         }
     }
 
@@ -274,17 +281,20 @@ function game_loop() {
         if (document.getElementById("score").style.display != "none") {
             move_player_horizontally("right", velocity_state["current_velocity"]);
 
-            increase_velocity(1);
+            const game_area_width = game_area.clientWidth; // Game area width
+            increase_velocity(game_area_width * 0.03053435114503816793);
 
             key_cooldowns["right"] = currentTime + COOLDOWN_TIME;
-            key_pressed["times"] += 1;
-            if (key_pressed["times"] = 3) {
-                COOLDOWN_TIME = 100;
-            }
         }
     }
 
     if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
+        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
+        forward_event_handler();
+        key_cooldowns["forward"] = currentTime + 300;
+    }
+
+    if ((click_states["0"])
         && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
         forward_event_handler();
         key_cooldowns["forward"] = currentTime + 300;
