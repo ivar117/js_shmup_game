@@ -488,30 +488,16 @@ requestAnimationFrame(() => {
     init_audio_icon();
 })
 
-function set_fullscreen() {
-    const game_area = document.getElementById("game-area");
-    // const fullscreen_button = document.getElementById("fullscreen-control");
-    const fullscreen_icon = document.getElementById("fullscreen-icon");
-
-    if (fullscreen_icon.src.endsWith("fullscreen_enter.svg")) {
-        requestAnimationFrame(() => {
-            game_area.requestFullscreen();
+function toggle_fullscreen() {
+    if (!already_fullscreen) {
+        game_area.requestFullscreen().then(() => {
+            already_fullscreen = true;
+        });
+    } else {
+        document.exitFullscreen().then(() => {
+            already_fullscreen = false;
         });
     }
-    else {
-        document.exitFullscreen();
-    }
-}
-
-const fullscreen_state = localStorage.getItem("fullscreen_state");
-if (fullscreen_state === null) { // If not previously cached
-    localStorage.setItem("fullscreen_state", "false");
-}
-else if (fullscreen_state == "true") { // If fullscreen was previously set to true
-    // game_area.requestFullscreen();
-    game_area.requestFullscreen().catch(err => {
-        console.error("Error attempting to enable full-screen mode:", err);
-    });
 }
 
 function handleFullscreenChange() {
@@ -521,32 +507,38 @@ function handleFullscreenChange() {
 
     if (document.fullscreenElement === game_area) {
         // Game area is in fullscreen
+        already_fullscreen = true;
         fullscreen_icon.src = path + "fullscreen_exit.svg";
         game_area.style.borderStyle = "none"; // Remove border
-        localStorage.setItem("fullscreen_state", "true")
-        // You can change your variables or styles here
     } else {
         // Game area has exited fullscreen
+        already_fullscreen = false;
         fullscreen_icon.src = path + "fullscreen_enter.svg";
-        game_area.style.borderStyle = "solid"; // Remove border
-        localStorage.setItem("fullscreen_state", "false")
+        game_area.style.borderStyle = "solid";
     }
 }
 
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 
 let already_fullscreen = false;
+// Set to fullscreen by default on smaller screens. Currently not working.
 function toggleFullscreenBasedOnWindowSize() {
     if (game_area_width <= 700 && !already_fullscreen) {
         already_fullscreen = true;
-        game_area.requestFullscreen();
+        toggle_fullscreen();
     }
-    else if (game_area_width > 700 && already_fullscreen) {  // Exit fullscreen if it's too large
+    else if (game_area_width > 700 && already_fullscreen) {
         already_fullscreen = false;
-        document.exitFullscreen();
+        toggle_fullscreen();
     }
 }
 
+let resizeTimeout;
 window.addEventListener('resize', () => {
-    toggleFullscreenBasedOnWindowSize();
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        toggleFullscreenBasedOnWindowSize();
+    }, 250);
 });
+
+//toggleFullscreenBasedOnWindowSize();
