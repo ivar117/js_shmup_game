@@ -59,7 +59,7 @@ button.invert-colors {
 
 .game-area #fullscreen-control {
     filter: invert(1);
-    width: 5%;
+    width: 2.5rem;
     /* margin-bottom: auto; */
     position: absolute;
     right: 0;

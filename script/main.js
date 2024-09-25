@@ -498,15 +498,20 @@ requestAnimationFrame(() => {
     init_audio_icon();
 })
 
+let already_fullscreen = false;
 function toggle_fullscreen() {
     if (!already_fullscreen) {
-        game_area.requestFullscreen().then(() => {
-            already_fullscreen = true;
-        });
+        already_fullscreen = true;
+        game_area.requestFullscreen();
+        // game_area.requestFullscreen().then(() => {
+        //     already_fullscreen = true;
+        // });
     } else {
-        document.exitFullscreen().then(() => {
-            already_fullscreen = false;
-        });
+        already_fullscreen = false;
+        document.exitFullscreen();
+        // document.exitFullscreen().then(() => {
+        //     already_fullscreen = false;
+        // });
     }
 }
 
@@ -517,12 +522,10 @@ function handleFullscreenChange() {
 
     if (document.fullscreenElement === game_area) {
         // Game area is in fullscreen
-        already_fullscreen = true;
         fullscreen_icon.src = path + "fullscreen_exit.svg";
         game_area.style.borderStyle = "none"; // Remove border
     } else {
         // Game area has exited fullscreen
-        already_fullscreen = false;
         fullscreen_icon.src = path + "fullscreen_enter.svg";
         game_area.style.borderStyle = "solid";
     }
@@ -530,25 +533,24 @@ function handleFullscreenChange() {
 
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 
-let already_fullscreen = false;
 // Set to fullscreen by default on smaller screens. Currently not working.
 function toggleFullscreenBasedOnWindowSize() {
     if (game_area_width <= 700 && !already_fullscreen) {
-        already_fullscreen = true;
+        // already_fullscreen = true;
         toggle_fullscreen();
     }
     else if (game_area_width > 700 && already_fullscreen) {
-        already_fullscreen = false;
+        // already_fullscreen = false;
         toggle_fullscreen();
     }
 }
 
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        toggleFullscreenBasedOnWindowSize();
-    }, 250);
-});
+// let resizeTimeout;
+// window.addEventListener('resize', () => {
+//     clearTimeout(resizeTimeout);
+//     resizeTimeout = setTimeout(() => {
+//         toggleFullscreenBasedOnWindowSize();
+//     }, 250);
+// });
 
 //toggleFullscreenBasedOnWindowSize();
