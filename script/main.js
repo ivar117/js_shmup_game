@@ -216,11 +216,14 @@ const key_up_handler = function(event) {
 }
 
 const click_down_handler = function(event) {
-    click_states[event.button] = true;
+    const fullscreen_state = document.getElementById("fullscreen-control");
+    if (!fullscreen_state.contains(event.target)) {
+        click_states[event.button] = true;
 
-    if (!is_gameloop_running) {
-        is_gameloop_running = true;
-        game_loop();
+        if (!is_gameloop_running) {
+            is_gameloop_running = true;
+            game_loop();
+        }
     }
 }
 
