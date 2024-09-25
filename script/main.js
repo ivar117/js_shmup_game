@@ -73,7 +73,7 @@ function createEnemy() {
         label: 'enemy',
         health: 2,
         render: {
-            fillStyle: "red"
+            fillStyle: "green"
         }
     });
     Composite.add(engine.world, enemy);
@@ -114,13 +114,15 @@ function shoot_projectile() {
             //const y_pos = player_height; // Start on top of the player
             const y_pos = game_area_height - player_height;
         
-            const projectile_body = Bodies.rectangle(x_pos, y_pos, projectile_width*0.8, projectile_height*0.8, {
+            const projectile_body = Bodies.rectangle(x_pos, y_pos, 0.2, 0.5, {
                 isStatic: false,
                 label: "projectile",
                 render: { 
-                     sprite: {
-                         texture: "images/components/projectile.png",
-                     }
+                    sprite: {
+                        texture: "images/components/projectile.png",
+                        xScale: 0.7,
+                        yScale: 1.3
+                    }
                  }
             });
 
@@ -157,6 +159,11 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
                 Composite.remove(engine.world, enemyBody);
                 current_score++; // Increment score
                 update_score(); // Update score display
+            } else {
+                enemyBody.render.fillStyle = "red";
+            // render: {
+            //     fillStyle: "blue"
+            // }
             }
             // Composite.remove(engine.world, bodyA);
             Composite.remove(engine.world, projectileBody);
