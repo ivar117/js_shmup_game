@@ -5,8 +5,8 @@ let is_gameloop_running = false;
 const key_states = {}; // Currently pressed down keys
 const key_cooldowns = {};
 const click_states = {};
-const velocity_state = {};
-velocity_state["current_velocity"] = 20;
+let velocity_state = 20
+//velocity_state = 20;
 let COOLDOWN_TIME = 100;
 
 var Engine = Matter.Engine; // Physics engine
@@ -213,13 +213,41 @@ const key_down_handler = function(event) {
     }
 }
 
+let deceleration_interval;
+const deceleration = (direction, input) => {
+    velocity_state += input;
+    if (
+        (direction === "left" && velocity_state <= 0) ||
+        (direction === "right" && velocity_state >= 0)
+    ) {
+        clearInterval(deceleration_interval);
+        if (direction === "right") {
+            velocity_state = 20;
+        }
+        else {
+            velocity_state = -20;
+        }
+    }
+    else {
+        move_player_horizontally(velocity_state);
+    }
+}
+
 const key_up_handler = function(event) {
     /* remove key states and cooldowns */
     delete key_states[event.key];
     delete key_cooldowns[event.key];
-    velocity_state["current_velocity"] = 20;
-    velocity_exp_factor = 0.5;
-    //COOLDOWN_TIME = 200;
+
+    if (velocity_state > 0) {
+        deceleration_interval = setInterval(
+            deceleration("left", -(game_area_width * 0.03053435114503816793)),
+        500); //reduce the velocity every 0.5s
+    }
+    else if (velocity_state < 0 ) {
+        deceleration_interval = setInterval(
+            deceleration("right", game_area_width * 0.03053435114503816793),
+        500); //reduce the velocity every 0.5s
+    }
 }
 
 const click_down_handler = function(event) {
@@ -241,33 +269,12 @@ const click_up_handler = function(event) {
 function increase_velocity(increment) {
     const game_area_width = game_area.clientWidth; // Game area width
     const max_velocity = game_area_width * 0.12213740458015267175
+    const min_velocity = -(game_area_width * 0.12213740458015267175)
 
-    velocity_state["current_velocity"] += increment;
-    if (velocity_state["current_velocity"] > max_velocity) {
-        velocity_state["current_velocity"] = max_velocity;
-    };
+    if (velocity_state >= min_velocity && velocity_state <= max_velocity) {
+        velocity_state += increment;
+    }
 }
-
-// let velocity_exp_factor = 0.5;
-// function increase_velocity(input) {
-//     const acceleration = 0.5; // Define increase rate
-//     const deceleration = 0.5; // Define decrease rate
-//     const max_velocity = 80; // Define maximum velocity
-
-//     // Adjust velocity based on input (1 = increase, -1 = decrease)
-//     if (input === 1) {
-//         velocity_state["current_velocity"] += acceleration; // Increase
-//     } else if (input === -1) {
-//         velocity_state["current_velocity"] -= deceleration; // Decrease
-//     }
-
-//     // Cap velocity within max limits
-//     if (velocity_state["current_velocity"] > max_velocity) {
-//         velocity_state["current_velocity"] = max_velocity;
-//     } else if (velocity_state["current_velocity"] < 0) {
-//         velocity_state["current_velocity"] = 0; // Prevent negative velocity
-//     }
-// }
 
 function game_loop() {
     const currentTime = Date.now();
@@ -277,10 +284,10 @@ function game_loop() {
     if ((key_states["a"] || key_states["ArrowLeft"])
         && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("left", velocity_state["current_velocity"]);
+            move_player_horizontally(velocity_state);
 
             const game_area_width = game_area.clientWidth; // Game area width
-            increase_velocity(game_area_width * 0.03053435114503816793);
+            increase_velocity(-(game_area_width * 0.03053435114503816793));
 
             key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
         }
@@ -289,7 +296,7 @@ function game_loop() {
     if ((key_states["d"] || key_states["ArrowRight"])
         && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
         if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally("right", velocity_state["current_velocity"]);
+            move_player_horizontally(velocity_state);
 
             const game_area_width = game_area.clientWidth; // Game area width
             increase_velocity(game_area_width * 0.03053435114503816793);
@@ -340,7 +347,7 @@ function forward_event_handler() {
     }
 }
 
-function move_player_horizontally(direction, distance) {
+function move_player_horizontally(distance) {
     const game_area = document.getElementById("game-area")
     const game_area_width = game_area.clientWidth; // Game area width
     const player = document.getElementById("player");
@@ -349,10 +356,6 @@ function move_player_horizontally(direction, distance) {
 
     max_position = game_area_width - 80;
     min_position = 20;
-
-    if (direction == "left") {
-        distance = -distance;
-    }
 
     if (player_position_int > max_position) {
         player_position_int = max_position;
