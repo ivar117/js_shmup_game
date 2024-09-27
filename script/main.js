@@ -235,19 +235,27 @@ const deceleration = (direction, input) => {
 
 const key_up_handler = function(event) {
     /* remove key states and cooldowns */
-    delete key_states[event.key];
     delete key_cooldowns[event.key];
+    const deceleration_time = 250;
 
+    /* TODO: group entries in key_states to the specfic.
+    * Since "a", "d" etc deal with moving horizontally, they should be grouped
+    * inside of the key_states object. Then the below if statement
+    * is more simple.
+    * if (key_states )
+    */
+    // if (event.key)
     if (velocity_state > 0) {
         deceleration_interval = setInterval(
             deceleration("left", -(game_area_width * 0.03053435114503816793)),
-        500); //reduce the velocity every 0.5s
+        deceleration_time); //reduce the velocity every 0.5s
     }
     else if (velocity_state < 0 ) {
         deceleration_interval = setInterval(
             deceleration("right", game_area_width * 0.03053435114503816793),
-        500); //reduce the velocity every 0.5s
+        deceleration_time); //reduce the velocity every 0.5s
     }
+    delete key_states[event.key];
 }
 
 const click_down_handler = function(event) {
@@ -278,7 +286,6 @@ function increase_velocity(increment) {
 
 function game_loop() {
     const currentTime = Date.now();
-    const max_distance = 80;
 
     /* process key states */
     if ((key_states["a"] || key_states["ArrowLeft"])
