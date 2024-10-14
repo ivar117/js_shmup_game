@@ -2,12 +2,13 @@ var current_score = 0;
 var asteroid_last_placement;
 let is_gameloop_running = false;
 
-const key_states = {}; // Currently pressed down keys
+const key_states = {x_movement: [], forward: []}; // Currently pressed down keys
+const key_states_values = {x_movement: ["a", "ArrowLeft", "d", "ArrowRight"], forward: ["w", "ArrowUp", " "]}; // Currently pressed down keys
 const key_cooldowns = {};
 const click_states = {};
-let velocity_state = 20
-//velocity_state = 20;
-let COOLDOWN_TIME = 100;
+let velocity_state = 0;
+const XMOVEMENT_COOLDOWN_TIME = 100;
+const SHOOT_COOLDOWN_TIME = 200;
 
 var Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -204,7 +205,11 @@ document.body.addEventListener("keydown", initial_key_eventhandler);
 game_area.addEventListener("click", initial_key_eventhandler);
 
 const key_down_handler = function(event) {
-    key_states[event.key] = true;
+    Object.keys(key_states_values).forEach((key) => {
+        if (key_states_values[key].includes(event.key)) {
+            key_states[key][event.key] = true;
+        }
+    });
 
     /* Start the game loop if not already running */
     if (!is_gameloop_running) {
@@ -216,17 +221,10 @@ const key_down_handler = function(event) {
 let deceleration_interval;
 const deceleration = (direction, input) => {
     velocity_state += input;
-    if (
-        (direction === "left" && velocity_state <= 0) ||
-        (direction === "right" && velocity_state >= 0)
-    ) {
+    if ((direction === "left" && velocity_state <= 0) ||
+    (direction === "right" && velocity_state >= 0)) {
         clearInterval(deceleration_interval);
-        if (direction === "right") {
-            velocity_state = 20;
-        }
-        else {
-            velocity_state = -20;
-        }
+        velocity_state = 0;
     }
     else {
         move_player_horizontally(velocity_state);
@@ -236,26 +234,31 @@ const deceleration = (direction, input) => {
 const key_up_handler = function(event) {
     /* remove key states and cooldowns */
     delete key_cooldowns[event.key];
-    const deceleration_time = 250;
+    const deceleration_time = 50;
 
-    /* TODO: group entries in key_states to the specfic.
-    * Since "a", "d" etc deal with moving horizontally, they should be grouped
-    * inside of the key_states object. Then the below if statement
-    * is more simple.
-    * if (key_states )
-    */
-    // if (event.key)
-    if (velocity_state > 0) {
-        deceleration_interval = setInterval(
-            deceleration("left", -(game_area_width * 0.03053435114503816793)),
-        deceleration_time); //reduce the velocity every 0.5s
+    if (key_states_values["x_movement"].includes(event.key)) {
+        if (velocity_state > 20) { // Initial velocity direction is to the right
+            deceleration_interval = setInterval(() => {
+                deceleration("left", -(game_area_width * 0.03053435114503816793));
+            }, deceleration_time); // Reduce the velocity every 0.2s
+        }
+        else if (velocity_state < -20 ) { // Initial velocity direction is to the left
+            deceleration_interval = setInterval(() => {
+                deceleration("right", game_area_width * 0.03053435114503816793);
+            }, deceleration_time); // Reduce the velocity every 0.2s
+        }
+        else {
+            velocity_state = 0;
+        }
     }
-    else if (velocity_state < 0 ) {
-        deceleration_interval = setInterval(
-            deceleration("right", game_area_width * 0.03053435114503816793),
-        deceleration_time); //reduce the velocity every 0.5s
-    }
-    delete key_states[event.key];
+
+    // Go through the keys in key_states to find and delete the current event key
+    Object.keys(key_states).forEach((key) => {
+        const entry = key_states[key];
+        if (entry[event.key]) {
+            delete entry[event.key];
+        }
+    });
 }
 
 const click_down_handler = function(event) {
@@ -284,44 +287,44 @@ function increase_velocity(increment) {
     }
 }
 
+function x_movement(direction, current_time) {
+    //if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"])
+        //&& (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
+    const game_area_width = game_area.clientWidth; // Game area width
+    if (direction === "right") {
+        increase_velocity(game_area_width * 0.03053435114503816793);
+    }
+    else if (direction === "left") {
+        increase_velocity(-(game_area_width * 0.03053435114503816793));
+    }
+    move_player_horizontally(velocity_state);
+    key_cooldowns[direction] = current_time + XMOVEMENT_COOLDOWN_TIME; // Set cooldown end time
+    //}
+}
+
 function game_loop() {
-    const currentTime = Date.now();
+    const current_time = Date.now();
 
     /* process key states */
-    if ((key_states["a"] || key_states["ArrowLeft"])
-        && (!key_cooldowns["left"] || currentTime > key_cooldowns["left"])) {
-        if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally(velocity_state);
-
-            const game_area_width = game_area.clientWidth; // Game area width
-            increase_velocity(-(game_area_width * 0.03053435114503816793));
-
-            key_cooldowns["left"] = currentTime + COOLDOWN_TIME; // Set cooldown end time
-        }
+    if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"]) &&
+        (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
+        x_movement("left", current_time);
     }
 
-    if ((key_states["d"] || key_states["ArrowRight"])
-        && (!key_cooldowns["right"] || currentTime > key_cooldowns["right"])) {
-        if (document.getElementById("score").style.display != "none") {
-            move_player_horizontally(velocity_state);
-
-            const game_area_width = game_area.clientWidth; // Game area width
-            increase_velocity(game_area_width * 0.03053435114503816793);
-
-            key_cooldowns["right"] = currentTime + COOLDOWN_TIME;
-        }
+    if ((key_states.x_movement["d"] || key_states.x_movement["ArrowRight"]) &&
+        (!key_cooldowns["right"] || current_time > key_cooldowns["right"])) {
+        x_movement("right", current_time)
     }
 
-    if ((key_states["w"] || key_states[" "] || key_states["ArrowUp"])
-        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
+    if ((key_states.forward["w"] || key_states.forward[" "] || key_states.forward["ArrowUp"]) &&
+        (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
         forward_event_handler();
-        key_cooldowns["forward"] = currentTime + 300;
+        key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
     }
 
-    if ((click_states["0"])
-        && (!key_cooldowns["forward"] || currentTime > key_cooldowns["forward"])) {
+    if (click_states["0"] && (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
         forward_event_handler();
-        key_cooldowns["forward"] = currentTime + 300;
+        key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
     }
 
     /* request the next frame */
