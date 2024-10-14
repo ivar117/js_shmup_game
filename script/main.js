@@ -146,7 +146,7 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
 
         // Check for collision between projectile and enemy
         if ((bodyA.label === 'projectile' && bodyB.label === 'enemy') || 
-            (bodyA.label === 'enemy' && bodyB.label === 'projectile')) {
+        (bodyA.label === 'enemy' && bodyB.label === 'projectile')) {
             // Handle the collision, e.g., removing the enemy and projectile
             
             // Determine which body is the enemy
@@ -184,8 +184,8 @@ const initial_key_eventhandler = function(event) {
         //return;
     //}
     const fullscreen_state = document.getElementById("fullscreen-control");
-    if ((event.type === "click" && !fullscreen_state.contains(event.target))
-        || (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
+    if ((event.type === "click" && !fullscreen_state.contains(event.target)) ||
+        (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
         startEnemySpawn();
 
 	    document.body.removeEventListener("keydown", initial_key_eventhandler);
