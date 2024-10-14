@@ -107,7 +107,6 @@ function shoot_projectile() {
             const player_width = parseFloat(player_computed_style.width);
             const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
             const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
-            console.log(projectile_width, projectile_height);
 
             const player_position = parseFloat(player_computed_style.left);
             const x_pos = player_position + (player_width / 2) ;
@@ -339,7 +338,7 @@ function forward_event_handler() {
     if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
-        game_area.style.animation = "moveBackground 2.0s linear infinite";
+        game_area.style.animation = "moveBackground 3.0s linear infinite";
         /* Turn on the music! */
         const audio_element = document.getElementById("audio-element");
         audio_element.play();
@@ -381,7 +380,8 @@ function move_player_horizontally(distance) {
 
 function update_score() {
     score = document.querySelector(".score");
-    score.innerHTML = `<div class="score-text">Score: </div> <span id="score-number">${current_score}</span>`;
+    score_number = score.querySelector("#score-number");
+    score_number.innerText = current_score;
 }
 
 function init_audio_icon() {
