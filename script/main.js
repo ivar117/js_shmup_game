@@ -9,6 +9,7 @@ const click_states = {};
 let velocity_state = 0;
 const XMOVEMENT_COOLDOWN_TIME = 100;
 const SHOOT_COOLDOWN_TIME = 200;
+const CANVAS_WIDTH_VELOCITY_FACTOR = 0.03053435114503816793;
 
 var Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -24,7 +25,7 @@ const engine = Engine.create();
 const render = Render.create({
     element: game_area,
     engine: engine,
-    options: { // TODO: width and height are not dynamic
+    options: {
         width: game_area_width,
         height: game_area_height,
         showAngleIndicator: false,
@@ -238,12 +239,12 @@ const key_up_handler = function(event) {
     if (key_states_values["x_movement"].includes(event.key)) {
         if (velocity_state > 20) { // Initial velocity direction is to the right
             deceleration_interval = setInterval(() => {
-                deceleration("left", -(game_area_width * 0.03053435114503816793));
+                deceleration("left", -(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR));
             }, deceleration_time); // Reduce the velocity every 0.2s
         }
         else if (velocity_state < -20 ) { // Initial velocity direction is to the left
             deceleration_interval = setInterval(() => {
-                deceleration("right", game_area_width * 0.03053435114503816793);
+                deceleration("right", game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR);
             }, deceleration_time); // Reduce the velocity every 0.2s
         }
         else {
@@ -291,10 +292,10 @@ function x_movement(direction, current_time) {
         //&& (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
     const game_area_width = game_area.clientWidth; // Game area width
     if (direction === "right") {
-        increase_velocity(game_area_width * 0.03053435114503816793);
+        increase_velocity(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR);
     }
     else if (direction === "left") {
-        increase_velocity(-(game_area_width * 0.03053435114503816793));
+        increase_velocity(-(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR));
     }
     move_player_horizontally(velocity_state);
     key_cooldowns[direction] = current_time + XMOVEMENT_COOLDOWN_TIME; // Set cooldown end time
