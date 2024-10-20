@@ -1,5 +1,5 @@
-var current_score = 0;
-var asteroid_last_placement;
+let current_score = 0;
+let asteroid_last_placement;
 let is_gameloop_running = false;
 
 const key_states = {x_movement: [], forward: []}; // Currently pressed down keys
@@ -11,13 +11,13 @@ const XMOVEMENT_COOLDOWN_TIME = 100;
 const SHOOT_COOLDOWN_TIME = 200;
 const CANVAS_WIDTH_VELOCITY_FACTOR = 0.03053435114503816793;
 
-var Engine = Matter.Engine; // Physics engine
+let Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Composite = Matter.Composite;
 
-var game_area = document.getElementById('game-area')
+let game_area = document.getElementById('game-area')
 let game_area_height = game_area.clientHeight;
 let game_area_width = game_area.clientWidth;
 
@@ -36,12 +36,12 @@ const render = Render.create({
     }
 });
 
-var runner = Runner.create();
+let runner = Runner.create();
 Runner.run(runner, engine);
 Render.run(render);
 
 // Create player body (assuming you already have a player in the DOM)
-// var playerBody = Bodies.rectangle(400, 550, 50, 30, {
+// let playerBody = Bodies.rectangle(400, 550, 50, 30, {
 //     isStatic: true,
 //     label: "player",
 //     render: {
