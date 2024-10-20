@@ -70,7 +70,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    var enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 0.1*game_area_width, 30, {
+    const enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 0.1*game_area_width, 30, {
         isStatic: true,
         label: 'enemy',
         health: 2,
@@ -140,10 +140,10 @@ function shoot_projectile() {
 
 // Collision detection to check if projectile hits an enemy
 Matter.Events.on(engine, 'collisionStart', function(event) {
-    var pairs = event.pairs;
+    const pairs = event.pairs;
     pairs.forEach(pair => {
-        var bodyA = pair.bodyA;
-        var bodyB = pair.bodyB;
+        const bodyA = pair.bodyA;
+        const bodyB = pair.bodyB;
 
         // Check for collision between projectile and enemy
         if ((bodyA.label === 'projectile' && bodyB.label === 'enemy') || 
@@ -151,9 +151,8 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
             // Handle the collision, e.g., removing the enemy and projectile
             
             // Determine which body is the enemy
-            var enemyBody = bodyA.label === 'enemy' ? bodyA : bodyB;
-            var projectileBody = bodyA.label === 'projectile' ? bodyA : bodyB;
-
+            const enemyBody = bodyA.label === 'enemy' ? bodyA : bodyB;
+            const projectileBody = bodyA.label === 'projectile' ? bodyA : bodyB;
             
             enemyBody.health--;
             if (enemyBody.health <= 0) {
@@ -162,11 +161,8 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
                 update_score(); // Update score display
             } else {
                 enemyBody.render.fillStyle = "red";
-            // render: {
-            //     fillStyle: "blue"
-            // }
             }
-            // Composite.remove(engine.world, bodyA);
+
             Composite.remove(engine.world, projectileBody);
         }
     });
