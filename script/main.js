@@ -17,17 +17,17 @@ let Engine = Matter.Engine; // Physics engine
     Bodies = Matter.Bodies,
     Composite = Matter.Composite;
 
-let game_area = document.getElementById('game-area')
-let game_area_height = game_area.clientHeight;
-let game_area_width = game_area.clientWidth;
+let game_canvas = document.getElementById('game-canvas')
+let game_canvas_height = game_canvas.clientHeight;
+let game_canvas_width = game_canvas.clientWidth;
 
 const engine = Engine.create();
 const render = Render.create({
-    element: game_area,
+    element: game_canvas,
     engine: engine,
     options: {
-        width: game_area_width,
-        height: game_area_height,
+        width: game_canvas_width,
+        height: game_canvas_height,
         showAngleIndicator: false,
         showCollisions: true,
         showSeparations: true,
@@ -56,11 +56,11 @@ Render.run(render);
 // Function to update render dimensions
 function updateRenderDimensions() {
     // Get the current dimensions of the game area
-    game_area_width = game_area.clientWidth;
-    game_area_height = game_area.clientHeight;
+    game_canvas_width = game_canvas.clientWidth;
+    game_canvas_height = game_canvas.clientHeight;
 
     // Update the render's dimensions
-    Render.setSize(render, game_area_width, game_area_height);
+    Render.setSize(render, game_canvas_width, game_canvas_height);
 }
 
 // Resize event listener
@@ -70,7 +70,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    const enemy = Bodies.rectangle(Math.random() * game_area_width, 50, 0.1*game_area_width, 30, {
+    const enemy = Bodies.rectangle(Math.random() * game_canvas_width, 50, 0.1*game_canvas_width, 30, {
         isStatic: true,
         label: 'enemy',
         health: 2,
@@ -186,19 +186,19 @@ const initial_key_eventhandler = function(event) {
         startEnemySpawn();
 
 	    document.body.removeEventListener("keydown", initial_key_eventhandler);
-	    game_area.removeEventListener("click", initial_key_eventhandler);
+	    game_canvas.removeEventListener("click", initial_key_eventhandler);
         forward_event_handler();
         requestAnimationFrame(() => {
             document.body.addEventListener("keydown", key_down_handler);
             document.body.addEventListener("keyup", key_up_handler);
-            game_area.addEventListener("mousedown", click_down_handler);
-            game_area.addEventListener("mouseup", click_up_handler);
+            game_canvas.addEventListener("mousedown", click_down_handler);
+            game_canvas.addEventListener("mouseup", click_up_handler);
         });
     }
 }
 
 document.body.addEventListener("keydown", initial_key_eventhandler);
-game_area.addEventListener("click", initial_key_eventhandler);
+game_canvas.addEventListener("click", initial_key_eventhandler);
 
 const key_down_handler = function(event) {
     Object.keys(key_states_values).forEach((key) => {
@@ -229,25 +229,6 @@ const deceleration = (direction, input) => {
 
 const key_up_handler = function(event) {
     /* remove key states and cooldowns */
-    delete key_cooldowns[event.key];
-    const deceleration_time = 50;
-
-    if (key_states_values["x_movement"].includes(event.key)) {
-        if (velocity_state > 20) { // Initial velocity direction is to the right
-            deceleration_interval = setInterval(() => {
-                deceleration("left", -(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR));
-            }, deceleration_time); // Reduce the velocity every 0.2s
-        }
-        else if (velocity_state < -20 ) { // Initial velocity direction is to the left
-            deceleration_interval = setInterval(() => {
-                deceleration("right", game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR);
-            }, deceleration_time); // Reduce the velocity every 0.2s
-        }
-        else {
-            velocity_state = 0;
-        }
-    }
-
     // Go through the keys in key_states to find and delete the current event key
     Object.keys(key_states).forEach((key) => {
         const entry = key_states[key];
@@ -255,6 +236,25 @@ const key_up_handler = function(event) {
             delete entry[event.key];
         }
     });
+
+    delete key_cooldowns[event.key];
+    const deceleration_time = 50;
+
+    if (key_states_values["x_movement"].includes(event.key)) {
+        if (velocity_state > 20) { // Initial velocity direction is to the right
+            deceleration_interval = setInterval(() => {
+                deceleration("left", -(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
+            }, deceleration_time); // Reduce the velocity every 0.2s
+        }
+        else if (velocity_state < -20 ) { // Initial velocity direction is to the left
+            deceleration_interval = setInterval(() => {
+                deceleration("right", game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
+            }, deceleration_time); // Reduce the velocity every 0.2s
+        }
+        else {
+            velocity_state = 0;
+        }
+    }
 }
 
 const click_down_handler = function(event) {
@@ -274,9 +274,9 @@ const click_up_handler = function(event) {
 }
 
 function increase_velocity(increment) {
-    const game_area_width = game_area.clientWidth; // Game area width
-    const max_velocity = game_area_width * 0.12213740458015267175
-    const min_velocity = -(game_area_width * 0.12213740458015267175)
+    const game_canvas_width = game_canvas.clientWidth; // Game area width
+    const max_velocity = game_canvas_width * 0.22213740458015267175
+    const min_velocity = -(game_canvas_width * 0.22213740458015267175)
 
     if (velocity_state >= min_velocity && velocity_state <= max_velocity) {
         velocity_state += increment;
@@ -286,12 +286,12 @@ function increase_velocity(increment) {
 function x_movement(direction, current_time) {
     //if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"])
         //&& (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
-    const game_area_width = game_area.clientWidth; // Game area width
+    const game_canvas_width = game_canvas.clientWidth; // Game area width
     if (direction === "right") {
-        increase_velocity(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR);
+        increase_velocity(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
     }
     else if (direction === "left") {
-        increase_velocity(-(game_area_width * CANVAS_WIDTH_VELOCITY_FACTOR));
+        increase_velocity(-(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
     }
     move_player_horizontally(velocity_state);
     key_cooldowns[direction] = current_time + XMOVEMENT_COOLDOWN_TIME; // Set cooldown end time
@@ -331,11 +331,11 @@ function game_loop() {
 
 function forward_event_handler() {
     const score_element = document.getElementById("score");
-    game_area = document.getElementById("game-area");
+    game_canvas = document.getElementById("game-canvas");
     if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
-        game_area.style.animation = "moveBackground 3.0s linear infinite";
+        game_canvas.style.animation = "moveBackground 3.0s linear infinite";
         /* Turn on the music! */
         const audio_element = document.getElementById("audio-element");
         audio_element.play();
@@ -354,13 +354,13 @@ function forward_event_handler() {
 }
 
 function move_player_horizontally(distance) {
-    const game_area = document.getElementById("game-area")
-    const game_area_width = game_area.clientWidth; // Game area width
+    const game_canvas = document.getElementById("game-canvas")
+    const game_canvas_width = game_canvas.clientWidth; // Game area width
     const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
     let player_position_int = parseInt(player_position);
 
-    max_position = game_area_width - 80;
+    max_position = game_canvas_width - 80;
     min_position = 20;
 
     if (player_position_int > max_position) {
@@ -468,28 +468,28 @@ function toggle_invert_color() {
 }
 
 function create_asteroid() {
-    const game_area = document.getElementById("game-area")
+    const game_canvas = document.getElementById("game-canvas")
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
     asteroid.style.width = "9vmin";
     asteroid.id = "asteroid";
     asteroid.alt = "Asteroid";
-    game_area.appendChild(asteroid);
+    game_canvas.appendChild(asteroid);
     
-    const game_area_height = game_area.clientHeight;
-    const game_area_width = game_area.clientWidth;
+    const game_canvas_height = game_canvas.clientHeight;
+    const game_canvas_width = game_canvas.clientWidth;
     const asteroid_height = asteroid.clientHeight;
     const asteroid_animation_time = 4000;
 
     /* Calculate how far to move the asteroid during the animation */
-    const distance_to_move = game_area_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
+    const distance_to_move = game_canvas_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
     
-    vertical_placement = Math.floor(Math.random() * ((game_area_width - 60) - 1));
+    vertical_placement = Math.floor(Math.random() * ((game_canvas_width - 60) - 1));
     asteroid.style.left = vertical_placement + "px";
 
     const keyframes = [
         { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
-        { transform: `translateY(${game_area_height}px) rotate(360deg)` } // Move it down past the bottom
+        { transform: `translateY(${game_canvas_height}px) rotate(360deg)` } // Move it down past the bottom
     ];
 
     const options = {
@@ -512,8 +512,8 @@ let already_fullscreen = false;
 function toggle_fullscreen() {
     if (!already_fullscreen) {
         already_fullscreen = true;
-        game_area.requestFullscreen();
-        // game_area.requestFullscreen().then(() => {
+        game_canvas.requestFullscreen();
+        // game_canvas.requestFullscreen().then(() => {
         //     already_fullscreen = true;
         // });
     } else {
@@ -527,17 +527,17 @@ function toggle_fullscreen() {
 
 function handleFullscreenChange() {
     const path = "images/components/";
-    const game_area = document.getElementById("game-area");
+    const game_canvas = document.getElementById("game-canvas");
     const fullscreen_icon = document.getElementById("fullscreen-icon");
 
-    if (document.fullscreenElement === game_area) {
+    if (document.fullscreenElement === game_canvas) {
         // Game area is in fullscreen
         fullscreen_icon.src = path + "fullscreen_exit.svg";
-        game_area.style.borderStyle = "none"; // Remove border
+        game_canvas.style.borderStyle = "none"; // Remove border
     } else {
         // Game area has exited fullscreen
         fullscreen_icon.src = path + "fullscreen_enter.svg";
-        game_area.style.borderStyle = "solid";
+        game_canvas.style.borderStyle = "solid";
     }
 }
 
@@ -545,11 +545,11 @@ document.addEventListener('fullscreenchange', handleFullscreenChange);
 
 // Set to fullscreen by default on smaller screens. Currently not working.
 function toggleFullscreenBasedOnWindowSize() {
-    if (game_area_width <= 700 && !already_fullscreen) {
+    if (game_canvas_width <= 700 && !already_fullscreen) {
         // already_fullscreen = true;
         toggle_fullscreen();
     }
-    else if (game_area_width > 700 && already_fullscreen) {
+    else if (game_canvas_width > 700 && already_fullscreen) {
         // already_fullscreen = false;
         toggle_fullscreen();
     }

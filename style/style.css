@@ -22,7 +22,7 @@ button.invert-colors {
     width: 45px;
 }
 
-.game-area-container {
+.game-canvas-container {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -31,7 +31,7 @@ button.invert-colors {
     width: 70vw;
 }
 
-.game-area-container .items {
+.game-canvas-container .items {
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -40,7 +40,7 @@ button.invert-colors {
     height: 50px; /* Set a fixed height for the container */
 }
 
-.game-area {
+.game-canvas {
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -57,7 +57,7 @@ button.invert-colors {
     flex-direction: row;
 }
 
-.game-area #fullscreen-control {
+.game-canvas #fullscreen-control {
     filter: invert(1);
     width: 2.5rem;
     /* margin-bottom: auto; */
