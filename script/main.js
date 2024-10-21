@@ -331,7 +331,6 @@ function game_loop() {
 
 function forward_event_handler() {
     const score_element = document.getElementById("score");
-    game_canvas = document.getElementById("game-canvas");
     if (score_element.style.display === "none") { // Only run at initialization
         /* Animate the background */
         score_element.style.display = "block";
@@ -354,7 +353,6 @@ function forward_event_handler() {
 }
 
 function move_player_horizontally(distance) {
-    const game_canvas = document.getElementById("game-canvas")
     const game_canvas_width = game_canvas.clientWidth; // Game area width
     const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
@@ -468,14 +466,13 @@ function toggle_invert_color() {
 }
 
 function create_asteroid() {
-    const game_canvas = document.getElementById("game-canvas")
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
     asteroid.style.width = "9vmin";
     asteroid.id = "asteroid";
     asteroid.alt = "Asteroid";
     game_canvas.appendChild(asteroid);
-    
+
     const game_canvas_height = game_canvas.clientHeight;
     const game_canvas_width = game_canvas.clientWidth;
     const asteroid_height = asteroid.clientHeight;
@@ -483,7 +480,7 @@ function create_asteroid() {
 
     /* Calculate how far to move the asteroid during the animation */
     const distance_to_move = game_canvas_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
-    
+
     vertical_placement = Math.floor(Math.random() * ((game_canvas_width - 60) - 1));
     asteroid.style.left = vertical_placement + "px";
 
@@ -527,7 +524,6 @@ function toggle_fullscreen() {
 
 function handleFullscreenChange() {
     const path = "images/components/";
-    const game_canvas = document.getElementById("game-canvas");
     const fullscreen_icon = document.getElementById("fullscreen-icon");
 
     if (document.fullscreenElement === game_canvas) {
