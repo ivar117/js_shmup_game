@@ -136,3 +136,21 @@ button.audio {
     filter: grayscale(100%);
     position: absolute;
 }
+
+footer {
+    display: flex;
+	text-align: center;
+	padding: 22px;
+    align-items: center;
+    height: fit-content;
+}
+
+.links-container {
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.github-icon {
+    width: 40px;
+    filter: invert(0.9);
+}

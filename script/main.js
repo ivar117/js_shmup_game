@@ -443,6 +443,7 @@ function toggle_invert_color() {
     const icon = document.getElementById("invert-colors-icon");
     const score = document.getElementById("score");
     const audio_control_icon = document.getElementById("audio-control-icon");
+    const github_icon = document.querySelector(".github-icon")
     const body = document.body;
 
     const body_computedStyle = getComputedStyle(body);
@@ -450,10 +451,11 @@ function toggle_invert_color() {
     if (body_computedStyle.backgroundColor === "rgb(255, 255, 255)") {
         body.style.backgroundColor = "black";
         body.style.color = "white";
-        score.style.filter = "invert(10%)";
-        audio_control_icon.style.filter = "invert(90%)";
+        score.style.filter = "invert(0.1)";
+        audio_control_icon.style.filter = "invert(0.9)";
         icon.src = "images/components/light_mode.svg"
-        icon.style.filter = "invert(90%)";
+        icon.style.filter = "invert(0.9)";
+        github_icon.style.filter = "none"
     }
     else {
         body.style.backgroundColor = "white";
@@ -462,6 +464,7 @@ function toggle_invert_color() {
         audio_control_icon.style.filter = "none";
         icon.src = "images/components/dark_mode.svg"
         icon.style.filter = "none";
+        github_icon.style.filter = "invert(0.9)"
     }
 }
 
