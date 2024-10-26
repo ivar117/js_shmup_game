@@ -132,7 +132,7 @@ button.audio {
     transition: left 0.2s ease-in-out; /* Adjust the duration and easing as needed */
 }
 
-#asteroid {
+.asteroid {
     filter: grayscale(100%);
     position: absolute;
     width: 6vmin;

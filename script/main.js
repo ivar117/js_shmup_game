@@ -1,5 +1,4 @@
 let current_score = 0;
-let asteroid_last_placement;
 let is_gameloop_running = false;
 
 const key_states = {x_movement: [], forward: []}; // Currently pressed down keys
@@ -466,25 +465,23 @@ function toggle_invert_color() {
 function create_asteroid() {
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
-    asteroid.style.width = "9vmin";
-    asteroid.id = "asteroid";
+    asteroid.className = "asteroid";
     asteroid.alt = "Asteroid";
     game_canvas.appendChild(asteroid);
 
-    const game_canvas_height = game_canvas.clientHeight;
-    const game_canvas_width = game_canvas.clientWidth;
     const asteroid_height = asteroid.clientHeight;
-    const asteroid_animation_time = 4000;
+    const asteroid_animation_time = 3000;
 
     /* Calculate how far to move the asteroid during the animation */
     const distance_to_move = game_canvas_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
 
-    vertical_placement = Math.floor(Math.random() * ((game_canvas_width - 60) - 1));
-    asteroid.style.left = vertical_placement + "px";
+    horizontal_placement = get_random_number_between(40, game_canvas_width - 80)
+    asteroid.style.left = horizontal_placement + "px";
 
+    const degrees_to_rotate = get_random_number_between(.5, 2.0) * 360;
     const keyframes = [
         { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
-        { transform: `translateY(${game_canvas_height}px) rotate(360deg)` } // Move it down past the bottom
+        { transform: `translateY(${game_canvas_height}px) rotate(${degrees_to_rotate}deg)` } // Move it down past the bottom
     ];
 
     const options = {
@@ -496,7 +493,6 @@ function create_asteroid() {
     setTimeout(() => {
         asteroid.remove();
     }, asteroid_animation_time);
-    asteroid_last_placement = vertical_placement;
 }
 
 requestAnimationFrame(() => {
