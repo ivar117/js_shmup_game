@@ -91,51 +91,48 @@ function createEnemy() {
 
 // Create a shooting projectile
 function shoot_projectile() {
-    // if (!document.getElementById("projectile")) {
-        const game_area = document.getElementById("game-area");
-        const projectile = document.createElement("img");
-        projectile.src = "images/components/projectile.png";
-        projectile.onload = function() {
-            projectile.style.width = "1.5vmin";
-            projectile.id = "projectile";
-            projectile.alt = "Projectile";
-            projectile.style.visibility = "hidden";
-            game_area.appendChild(projectile);
+    const projectile = document.createElement("img");
+    projectile.src = "images/components/projectile.png";
+    projectile.onload = function() {
+        projectile.style.width = "1.5vmin";
+        projectile.id = "projectile";
+        projectile.alt = "Projectile";
+        projectile.style.visibility = "hidden";
+        game_canvas.appendChild(projectile);
 
-            const player = document.getElementById("player");
-            const player_computed_style = window.getComputedStyle(player);
-            const player_height = parseInt(player_computed_style.height);
-            const player_width = parseFloat(player_computed_style.width);
-            const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
-            const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
+        const player = document.getElementById("player");
+        const player_computed_style = window.getComputedStyle(player);
+        const player_height = parseInt(player_computed_style.height);
+        const player_width = parseFloat(player_computed_style.width);
+        const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
+        const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
 
-            const player_position = parseFloat(player_computed_style.left);
-            const x_pos = player_position + (player_width / 2) ;
-            //const x_pos = player_position + (player_width / 2) - (projectile_width / 2);
-            //const y_pos = player_height; // Start on top of the player
-            const y_pos = game_area_height - player_height;
-        
-            const projectile_body = Bodies.rectangle(x_pos, y_pos, 0.2, 0.5, {
-                isStatic: false,
-                label: "projectile",
-                render: { 
-                    sprite: {
-                        texture: "images/components/projectile.png",
-                        xScale: 0.7,
-                        yScale: 1.3
-                    }
-                 }
-            });
+        const player_position = parseFloat(player_computed_style.left);
+        const x_pos = player_position + (player_width / 2) ;
+        //const x_pos = player_position + (player_width / 2) - (projectile_width / 2);
+        //const y_pos = player_height; // Start on top of the player
+        const y_pos = game_canvas_height - player_height;
 
-            Composite.add(engine.world, projectile_body);
-            Matter.Body.setVelocity(projectile_body, { x: 0, y: -40 }); // Move projectile_body upward
+        const projectile_body = Bodies.rectangle(x_pos, y_pos, 0.2, 0.5, {
+            isStatic: false,
+            label: "projectile",
+            render: {
+                sprite: {
+                    texture: "images/components/projectile.png",
+                    xScale: 0.7,
+                    yScale: 1.3
+                }
+             }
+        });
 
-            setTimeout(() => {
-                projectile.remove();
-                Composite.remove(engine.world, projectile_body);
-            }, 2000)
-        };
-    // }
+        Composite.add(engine.world, projectile_body);
+        Matter.Body.setVelocity(projectile_body, { x: 0, y: -40 }); // Move projectile_body upward
+
+        setTimeout(() => {
+            projectile.remove();
+            Composite.remove(engine.world, projectile_body);
+        }, 2000)
+    };
 }
 
 // Collision detection to check if projectile hits an enemy
@@ -187,7 +184,7 @@ const initial_key_eventhandler = function(event) {
 
 	    document.body.removeEventListener("keydown", initial_key_eventhandler);
 	    game_canvas.removeEventListener("click", initial_key_eventhandler);
-        forward_event_handler();
+        trigger_on_start();
         requestAnimationFrame(() => {
             document.body.addEventListener("keydown", key_down_handler);
             document.body.addEventListener("keyup", key_up_handler);
@@ -195,6 +192,27 @@ const initial_key_eventhandler = function(event) {
             game_canvas.addEventListener("mouseup", click_up_handler);
         });
     }
+}
+
+function trigger_on_start() {
+    /* Animate the background */
+    const score_element = document.getElementById("score");
+    score_element.style.display = "block";
+    game_canvas.style.animation = "moveBackground 3.0s linear infinite";
+
+    /* Turn on the music! */
+    const audio_element = document.getElementById("audio-element");
+    audio_element.play();
+
+    /* Remove the start instruction */
+    const start_text = document.getElementById("start-text");
+    start_text.remove();
+
+    /* Initialize falling asteroid animation in the game canvas */
+    setTimeout(() => {
+        create_asteroid();
+        setInterval(create_asteroid, 3000);
+    }, 1000)
 }
 
 document.body.addEventListener("keydown", initial_key_eventhandler);
@@ -314,41 +332,18 @@ function game_loop() {
 
     if ((key_states.forward["w"] || key_states.forward[" "] || key_states.forward["ArrowUp"]) &&
         (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
-        forward_event_handler();
+        shoot_projectile();
         key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
     }
 
     if (click_states["0"] && (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
-        forward_event_handler();
+        shoot_projectile();
         key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
     }
 
     /* request the next frame */
     if (is_gameloop_running) {
         requestAnimationFrame(game_loop);
-    }
-}
-
-function forward_event_handler() {
-    const score_element = document.getElementById("score");
-    if (score_element.style.display === "none") { // Only run at initialization
-        /* Animate the background */
-        score_element.style.display = "block";
-        game_canvas.style.animation = "moveBackground 3.0s linear infinite";
-        /* Turn on the music! */
-        const audio_element = document.getElementById("audio-element");
-        audio_element.play();
-        /* Remove the start instruction */
-        const start_text = document.getElementById("start-text");
-        start_text.remove();
-        /* Initialize random asteroid placement in the game area */
-        setTimeout(() => {
-            create_asteroid();
-            setInterval(create_asteroid, 3000);
-        }, 1000)
-    }
-    else { /* Shoot projectile */
-        shoot_projectile();
     }
 }
 
