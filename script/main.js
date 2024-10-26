@@ -6,9 +6,11 @@ const key_states_values = {x_movement: ["a", "ArrowLeft", "d", "ArrowRight"], fo
 const key_cooldowns = {};
 const click_states = {};
 let velocity_state = 0;
+
 const XMOVEMENT_COOLDOWN_TIME = 100;
 const SHOOT_COOLDOWN_TIME = 200;
 const CANVAS_WIDTH_VELOCITY_FACTOR = 0.03053435114503816793;
+const CANVAS_WIDTH_MAX_VELOCITY_FACTOR = 0.22213740458015267175;
 
 let Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -217,9 +219,30 @@ function trigger_on_start() {
 document.body.addEventListener("keydown", initial_key_eventhandler);
 game_canvas.addEventListener("click", initial_key_eventhandler);
 
+let last_time_xmovement_triggered;
+
+function check_if_toorecent_xmovement() {
+    /* Function to prevent glitching when spamming movement keys */
+    const time_to_pass = 100;
+    if (velocity_state != 0) {
+        if (Date.now() < last_time_xmovement_triggered + time_to_pass) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
+
 const key_down_handler = function(event) {
     Object.keys(key_states_values).forEach((key) => {
         if (key_states_values[key].includes(event.key)) {
+            if (key === "x_movement") {
+                if (check_if_toorecent_xmovement()) {
+                    return;
+                }
+                last_time_xmovement_triggered = Date.now();
+            }
             key_states[key][event.key] = true;
         }
     });
@@ -232,12 +255,12 @@ const key_down_handler = function(event) {
 }
 
 let deceleration_interval;
-const deceleration = (direction, input) => {
-    velocity_state += input;
-    if ((direction === "left" && velocity_state <= 0) ||
-    (direction === "right" && velocity_state >= 0)) {
-        clearInterval(deceleration_interval);
+function deceleration(deceleration_direction, input) {
+    change_velocity(input);
+    if ((deceleration_direction === "left" && velocity_state <= 0) ||
+    (deceleration_direction === "right" && velocity_state >= 0)) {
         velocity_state = 0;
+        clearInterval(deceleration_interval);
     }
     else {
         move_player_horizontally(velocity_state);
@@ -255,18 +278,22 @@ const key_up_handler = function(event) {
     });
 
     delete key_cooldowns[event.key];
-    const deceleration_time = 50;
+    const deceleration_time = 50; //Time in ms beteen each deceleration of velocity
+    const decrement = game_canvas_width * (CANVAS_WIDTH_VELOCITY_FACTOR);
 
     if (key_states_values["x_movement"].includes(event.key)) {
+        // Only start decelerating if velocity is greater/lesser than +-20
         if (velocity_state > 20) { // Initial velocity direction is to the right
+            clearInterval(deceleration_interval);
             deceleration_interval = setInterval(() => {
-                deceleration("left", -(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
-            }, deceleration_time); // Reduce the velocity every 0.2s
+                deceleration("left", -decrement);
+            }, deceleration_time);
         }
         else if (velocity_state < -20 ) { // Initial velocity direction is to the left
+            clearInterval(deceleration_interval);
             deceleration_interval = setInterval(() => {
-                deceleration("right", game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
-            }, deceleration_time); // Reduce the velocity every 0.2s
+                deceleration("right", decrement);
+            }, deceleration_time);
         }
         else {
             velocity_state = 0;
@@ -290,29 +317,22 @@ const click_up_handler = function(event) {
     delete click_states[event.button];
 }
 
-function increase_velocity(increment) {
-    const game_canvas_width = game_canvas.clientWidth; // Game area width
-    const max_velocity = game_canvas_width * 0.22213740458015267175
-    const min_velocity = -(game_canvas_width * 0.22213740458015267175)
+function change_velocity(increment) {
+    const max_velocity = game_canvas_width * CANVAS_WIDTH_MAX_VELOCITY_FACTOR;
+    const min_velocity = -(game_canvas_width * CANVAS_WIDTH_MAX_VELOCITY_FACTOR);
 
-    if (velocity_state >= min_velocity && velocity_state <= max_velocity) {
-        velocity_state += increment;
-    }
+    velocity_state = Math.max(min_velocity, Math.min(max_velocity, velocity_state + increment));
 }
 
 function x_movement(direction, current_time) {
-    //if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"])
-        //&& (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
-    const game_canvas_width = game_canvas.clientWidth; // Game area width
     if (direction === "right") {
-        increase_velocity(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
+        change_velocity(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
     }
     else if (direction === "left") {
-        increase_velocity(-(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
+        change_velocity(-(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
     }
     move_player_horizontally(velocity_state);
     key_cooldowns[direction] = current_time + XMOVEMENT_COOLDOWN_TIME; // Set cooldown end time
-    //}
 }
 
 function game_loop() {
@@ -320,12 +340,12 @@ function game_loop() {
 
     /* process key states */
     if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"]) &&
-        (!key_cooldowns["left"] || current_time > key_cooldowns["left"])) {
+        (!key_cooldowns["left"] || current_time >= key_cooldowns["left"])) {
         x_movement("left", current_time);
     }
 
     if ((key_states.x_movement["d"] || key_states.x_movement["ArrowRight"]) &&
-        (!key_cooldowns["right"] || current_time > key_cooldowns["right"])) {
+        (!key_cooldowns["right"] || current_time >= key_cooldowns["right"])) {
         x_movement("right", current_time)
     }
 
@@ -347,19 +367,20 @@ function game_loop() {
 }
 
 function move_player_horizontally(distance) {
-    const game_canvas_width = game_canvas.clientWidth; // Game area width
     const player = document.getElementById("player");
     const player_position = getComputedStyle(player).left;
     let player_position_int = parseInt(player_position);
 
-    max_position = game_canvas_width - 80;
-    min_position = 20;
+    max_position = game_canvas_width - 180;
+    min_position = 40;
 
     if (player_position_int > max_position) {
         player_position_int = max_position;
+        velocity_state = 0;
     }
     else if (player_position_int < min_position) {
         player_position_int = min_position;
+        velocity_state = 0;
     }
     else {
         player_position_int += distance;
