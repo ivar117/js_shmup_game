@@ -454,6 +454,10 @@ function toggle_audio() {
     }, 200);
 }
 
+requestAnimationFrame(() => {
+    init_audio_icon();
+})
+
 function toggle_invert_color() {
     const icon = document.getElementById("invert-colors-icon");
     const score = document.getElementById("score");
@@ -515,10 +519,6 @@ function create_asteroid() {
         asteroid.remove();
     }, asteroid_animation_time);
 }
-
-requestAnimationFrame(() => {
-    init_audio_icon();
-})
 
 let already_fullscreen = false;
 function toggle_fullscreen() {
