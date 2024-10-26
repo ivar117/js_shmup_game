@@ -70,7 +70,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    const enemy = Bodies.rectangle(Math.random() * game_canvas_width, 50, 0.1*game_canvas_width, 30, {
+    const enemy = Bodies.rectangle(get_random_number_between(80, game_canvas_width - 120), 50, 0.1*game_canvas_width, 30, {
         isStatic: true,
         label: 'enemy',
         health: 2,
