@@ -1,16 +1,16 @@
-let current_score = 0;
-let is_gameloop_running = false;
+let currentScore = 0;
+let isGameLoopRunning = false;
 
-const key_states = {x_movement: [], forward: []}; // Currently pressed down keys
-const key_states_values = {x_movement: ["a", "ArrowLeft", "d", "ArrowRight"], forward: ["w", "ArrowUp", " "]}; // Currently pressed down keys
-const key_cooldowns = {};
-const click_states = {};
-let velocity_state = 0;
+const keyStates = {xMovement: [], forward: []}; // Currently pressed down keys
+const keyStatesValues = {xMovement: ["a", "ArrowLeft", "d", "ArrowRight"], forward: ["w", "ArrowUp", " "]}; // Currently pressed down keys
+const keyCooldowns = {};
+const clickStates = {};
+let velocityState = 0;
 
-const XMOVEMENT_COOLDOWN_TIME = 100;
-const SHOOT_COOLDOWN_TIME = 200;
-const CANVAS_WIDTH_VELOCITY_FACTOR = 0.03053435114503816793;
-const CANVAS_WIDTH_MAX_VELOCITY_FACTOR = 0.22213740458015267175;
+const xMovementCooldownTime = 100;
+const shootCooldownTime = 200;
+const canvasWidthVelocityFactor = 0.03053435114503816793;
+const canvasWidthMaxVelocityFactor = 0.22213740458015267175;
 
 let Engine = Matter.Engine; // Physics engine
     Render = Matter.Render,
@@ -18,17 +18,17 @@ let Engine = Matter.Engine; // Physics engine
     Bodies = Matter.Bodies,
     Composite = Matter.Composite;
 
-let game_canvas = document.getElementById('game-canvas')
-let game_canvas_height = game_canvas.clientHeight;
-let game_canvas_width = game_canvas.clientWidth;
+let gameCanvas = document.getElementById('game-canvas');
+let gameCanvasHeight = gameCanvas.clientHeight;
+let gameCanvasWidth = gameCanvas.clientWidth;
 
 const engine = Engine.create();
 const render = Render.create({
-    element: game_canvas,
+    element: gameCanvas,
     engine: engine,
     options: {
-        width: game_canvas_width,
-        height: game_canvas_height,
+        width: gameCanvasWidth,
+        height: gameCanvasHeight,
         showAngleIndicator: false,
         showCollisions: true,
         showSeparations: true,
@@ -56,12 +56,12 @@ Render.run(render);
 
 // Function to update render dimensions
 function updateRenderDimensions() {
-    // Get the current dimensions of the game area
-    game_canvas_width = game_canvas.clientWidth;
-    game_canvas_height = game_canvas.clientHeight;
+    // Get the current dimensions of the game canvas
+    gameCanvasWidth = gameCanvas.clientWidth;
+    gameCanvasHeight = gameCanvas.clientHeight;
 
     // Update the render's dimensions
-    Render.setSize(render, game_canvas_width, game_canvas_height);
+    Render.setSize(render, gameCanvasWidth, gameCanvasHeight);
 }
 
 // Resize event listener
@@ -71,7 +71,7 @@ window.addEventListener('resize', () => {
 
 // Function to create enemies
 function createEnemy() {
-    const enemy = Bodies.rectangle(get_random_number_between(80, game_canvas_width - 120), 50, 0.1*game_canvas_width, 30, {
+    const enemy = Bodies.rectangle(getRandomNumberBetween(80, gameCanvasWidth - 120), 50, 0.1 * gameCanvasWidth, 30, {
         isStatic: true,
         label: 'enemy',
         health: 2,
@@ -91,7 +91,7 @@ function createEnemy() {
 }
 
 // Create a shooting projectile
-function shoot_projectile() {
+function shootProjectile() {
     const projectile = document.createElement("img");
     projectile.src = "images/components/projectile.png";
     projectile.onload = function() {
@@ -99,22 +99,20 @@ function shoot_projectile() {
         projectile.id = "projectile";
         projectile.alt = "Projectile";
         projectile.style.visibility = "hidden";
-        game_canvas.appendChild(projectile);
+        gameCanvas.appendChild(projectile);
 
         const player = document.getElementById("player");
-        const player_computed_style = window.getComputedStyle(player);
-        const player_height = parseInt(player_computed_style.height);
-        const player_width = parseFloat(player_computed_style.width);
-        const projectile_width = parseFloat(window.getComputedStyle(projectile).width);
-        const projectile_height = parseFloat(window.getComputedStyle(projectile).height);
+        const playerComputedStyle = window.getComputedStyle(player);
+        const playerHeight = parseInt(playerComputedStyle.height);
+        const playerWidth = parseFloat(playerComputedStyle.width);
+        const projectileWidth = parseFloat(window.getComputedStyle(projectile).width);
+        const projectileHeight = parseFloat(window.getComputedStyle(projectile).height);
 
-        const player_position = parseFloat(player_computed_style.left);
-        const x_pos = player_position + (player_width / 2) ;
-        //const x_pos = player_position + (player_width / 2) - (projectile_width / 2);
-        //const y_pos = player_height; // Start on top of the player
-        const y_pos = game_canvas_height - player_height;
+        const playerPosition = parseFloat(playerComputedStyle.left);
+        const xPos = playerPosition + (playerWidth / 2);
+        const yPos = gameCanvasHeight - playerHeight;
 
-        const projectile_body = Bodies.rectangle(x_pos, y_pos, 0.2, 0.5, {
+        const projectileBody = Bodies.rectangle(xPos, yPos, 0.2, 0.5, {
             isStatic: false,
             label: "projectile",
             render: {
@@ -126,13 +124,13 @@ function shoot_projectile() {
              }
         });
 
-        Composite.add(engine.world, projectile_body);
-        Matter.Body.setVelocity(projectile_body, { x: 0, y: -40 }); // Move projectile_body upward
+        Composite.add(engine.world, projectileBody);
+        Matter.Body.setVelocity(projectileBody, { x: 0, y: -40 }); // Move projectileBody upward
 
         setTimeout(() => {
             projectile.remove();
-            Composite.remove(engine.world, projectile_body);
-        }, 2000)
+            Composite.remove(engine.world, projectileBody);
+        }, 2000);
     };
 }
 
@@ -155,8 +153,8 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
             enemyBody.health--;
             if (enemyBody.health <= 0) {
                 Composite.remove(engine.world, enemyBody);
-                current_score++; // Increment score
-                update_score(); // Update score display
+                currentScore++; // Increment score
+                updateScore(); // Update score display
             } else {
                 enemyBody.render.fillStyle = "red";
             }
@@ -172,60 +170,55 @@ function startEnemySpawn() {
 }
 
 /* Function to handle the initial key event */
-const initial_key_eventhandler = function(event) {
-    //const excluded_keys = ["Alt", "Control", "Meta", "Escape"];
-
-    //if (excluded_keys.includes(event.key)) {
-        //return;
-    //}
-    const fullscreen_state = document.getElementById("fullscreen-control");
-    if ((event.type === "click" && !fullscreen_state.contains(event.target)) ||
+const initialKeyEventHandler = function(event) {
+    const fullscreenState = document.getElementById("fullscreen-control");
+    if ((event.type === "click" && !fullscreenState.contains(event.target)) ||
         (event.key === "w" || event.key === " " || event.key === "ArrowUp")) {
         startEnemySpawn();
 
-	    document.body.removeEventListener("keydown", initial_key_eventhandler);
-	    game_canvas.removeEventListener("click", initial_key_eventhandler);
-        trigger_on_start();
+	    document.body.removeEventListener("keydown", initialKeyEventHandler);
+	    gameCanvas.removeEventListener("click", initialKeyEventHandler);
+        triggerOnStart();
         requestAnimationFrame(() => {
-            document.body.addEventListener("keydown", key_down_handler);
-            document.body.addEventListener("keyup", key_up_handler);
-            game_canvas.addEventListener("mousedown", click_down_handler);
-            game_canvas.addEventListener("mouseup", click_up_handler);
+            document.body.addEventListener("keydown", keyDownHandler);
+            document.body.addEventListener("keyup", keyUpHandler);
+            gameCanvas.addEventListener("mousedown", clickDownHandler);
+            gameCanvas.addEventListener("mouseup", clickUpHandler);
         });
     }
 }
 
-function trigger_on_start() {
+function triggerOnStart() {
     /* Animate the background */
-    const score_element = document.getElementById("score");
-    score_element.style.display = "block";
-    game_canvas.style.animation = "moveBackground 3.0s linear infinite";
+    const scoreElement = document.getElementById("score");
+    scoreElement.style.display = "block";
+    gameCanvas.style.animation = "moveBackground 3.0s linear infinite";
 
     /* Turn on the music! */
-    const audio_element = document.getElementById("audio-element");
-    audio_element.play();
+    const audioElement = document.getElementById("audio-element");
+    audioElement.play();
 
     /* Remove the start instruction */
-    const start_text = document.getElementById("start-text");
-    start_text.remove();
+    const startText = document.getElementById("start-text");
+    startText.remove();
 
     /* Initialize falling asteroid animation in the game canvas */
     setTimeout(() => {
-        create_asteroid();
-        setInterval(create_asteroid, 3000);
-    }, 1000)
+        createAsteroid();
+        setInterval(createAsteroid, 3000);
+    }, 1000);
 }
 
-document.body.addEventListener("keydown", initial_key_eventhandler);
-game_canvas.addEventListener("click", initial_key_eventhandler);
+document.body.addEventListener("keydown", initialKeyEventHandler);
+gameCanvas.addEventListener("click", initialKeyEventHandler);
 
-let last_time_xmovement_triggered;
+let lastTimeXMovementTriggered;
 
-function check_if_toorecent_xmovement() {
+function checkIfTooRecentXMovement() {
     /* Function to prevent glitching when spamming movement keys */
-    const time_to_pass = 100;
-    if (velocity_state != 0) {
-        if (Date.now() < last_time_xmovement_triggered + time_to_pass) {
+    const timeToPass = 100;
+    if (velocityState !== 0) {
+        if (Date.now() < lastTimeXMovementTriggered + timeToPass) {
             return true;
         }
         else {
@@ -234,321 +227,314 @@ function check_if_toorecent_xmovement() {
     }
 }
 
-const key_down_handler = function(event) {
-    Object.keys(key_states_values).forEach((key) => {
-        if (key_states_values[key].includes(event.key)) {
-            if (key === "x_movement") {
-                if (check_if_toorecent_xmovement()) {
+const keyDownHandler = function(event) {
+    Object.keys(keyStatesValues).forEach((key) => {
+        if (keyStatesValues[key].includes(event.key)) {
+            if (key === "xMovement") {
+                if (checkIfTooRecentXMovement()) {
                     return;
                 }
-                last_time_xmovement_triggered = Date.now();
+                lastTimeXMovementTriggered = Date.now();
             }
-            key_states[key][event.key] = true;
+            keyStates[key][event.key] = true;
         }
     });
 
     /* Start the game loop if not already running */
-    if (!is_gameloop_running) {
-        is_gameloop_running = true;
-        game_loop();
+    if (!isGameLoopRunning) {
+        isGameLoopRunning = true;
+        gameLoop();
     }
 }
 
-let deceleration_interval;
-function deceleration(deceleration_direction, input) {
-    change_velocity(input);
-    if ((deceleration_direction === "left" && velocity_state <= 0) ||
-    (deceleration_direction === "right" && velocity_state >= 0)) {
-        velocity_state = 0;
-        clearInterval(deceleration_interval);
+let decelerationInterval;
+function deceleration(decelerationDirection, input) {
+    changeVelocity(input);
+    if ((decelerationDirection === "left" && velocityState <= 0) ||
+    (decelerationDirection === "right" && velocityState >= 0)) {
+        velocityState = 0;
+        clearInterval(decelerationInterval);
     }
     else {
-        move_player_horizontally(velocity_state);
+        movePlayerHorizontally(velocityState);
     }
 }
 
-const key_up_handler = function(event) {
+const keyUpHandler = function(event) {
     /* remove key states and cooldowns */
-    // Go through the keys in key_states to find and delete the current event key
-    Object.keys(key_states).forEach((key) => {
-        const entry = key_states[key];
+    Object.keys(keyStates).forEach((key) => {
+        const entry = keyStates[key];
         if (entry[event.key]) {
             delete entry[event.key];
         }
     });
 
-    delete key_cooldowns[event.key];
-    const deceleration_time = 50; //Time in ms beteen each deceleration of velocity
-    const decrement = game_canvas_width * (CANVAS_WIDTH_VELOCITY_FACTOR);
+    delete keyCooldowns[event.key];
+    const decelerationTime = 50; //Time in ms between each deceleration of velocity
+    const decrement = gameCanvasWidth * (canvasWidthVelocityFactor);
 
-    if (key_states_values["x_movement"].includes(event.key)) {
+    if (keyStatesValues["xMovement"].includes(event.key)) {
         // Only start decelerating if velocity is greater/lesser than +-20
-        if (velocity_state > 20) { // Initial velocity direction is to the right
-            clearInterval(deceleration_interval);
-            deceleration_interval = setInterval(() => {
+        if (velocityState > 20) { // Initial velocity direction is to the right
+            clearInterval(decelerationInterval);
+            decelerationInterval = setInterval(() => {
                 deceleration("left", -decrement);
-            }, deceleration_time);
+            }, decelerationTime);
         }
-        else if (velocity_state < -20 ) { // Initial velocity direction is to the left
-            clearInterval(deceleration_interval);
-            deceleration_interval = setInterval(() => {
+        else if (velocityState < -20) { // Initial velocity direction is to the left
+            clearInterval(decelerationInterval);
+            decelerationInterval = setInterval(() => {
                 deceleration("right", decrement);
-            }, deceleration_time);
+            }, decelerationTime);
         }
         else {
-            velocity_state = 0;
+            velocityState = 0;
         }
     }
 }
 
-const click_down_handler = function(event) {
-    const fullscreen_state = document.getElementById("fullscreen-control");
-    if (!fullscreen_state.contains(event.target)) {
-        click_states[event.button] = true;
+const clickDownHandler = function(event) {
+    const fullscreenState = document.getElementById("fullscreen-control");
+    if (!fullscreenState.contains(event.target)) {
+        clickStates[event.button] = true;
 
-        if (!is_gameloop_running) {
-            is_gameloop_running = true;
-            game_loop();
+        if (!isGameLoopRunning) {
+            isGameLoopRunning = true;
+            gameLoop();
         }
     }
 }
 
-const click_up_handler = function(event) {
-    delete click_states[event.button];
+const clickUpHandler = function(event) {
+    delete clickStates[event.button];
 }
 
-function change_velocity(increment) {
-    const max_velocity = game_canvas_width * CANVAS_WIDTH_MAX_VELOCITY_FACTOR;
-    const min_velocity = -(game_canvas_width * CANVAS_WIDTH_MAX_VELOCITY_FACTOR);
+function changeVelocity(increment) {
+    const maxVelocity = gameCanvasWidth * canvasWidthMaxVelocityFactor;
+    const minVelocity = -(gameCanvasWidth * canvasWidthMaxVelocityFactor);
 
-    velocity_state = Math.max(min_velocity, Math.min(max_velocity, velocity_state + increment));
+    velocityState = Math.max(minVelocity, Math.min(maxVelocity, velocityState + increment));
 }
 
-function x_movement(direction, current_time) {
+function xMovement(direction, currentTime) {
     if (direction === "right") {
-        change_velocity(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR);
+        changeVelocity(gameCanvasWidth * canvasWidthVelocityFactor);
     }
     else if (direction === "left") {
-        change_velocity(-(game_canvas_width * CANVAS_WIDTH_VELOCITY_FACTOR));
+        changeVelocity(-(gameCanvasWidth * canvasWidthVelocityFactor));
     }
-    move_player_horizontally(velocity_state);
-    key_cooldowns[direction] = current_time + XMOVEMENT_COOLDOWN_TIME; // Set cooldown end time
+    movePlayerHorizontally(velocityState);
+    keyCooldowns[direction] = currentTime + xMovementCooldownTime; // Set cooldown end time
 }
 
-function game_loop() {
-    const current_time = Date.now();
+function gameLoop() {
+    const currentTime = Date.now();
 
     /* process key states */
-    if ((key_states.x_movement["a"] || key_states.x_movement["ArrowLeft"]) &&
-        (!key_cooldowns["left"] || current_time >= key_cooldowns["left"])) {
-        x_movement("left", current_time);
+    if ((keyStates.xMovement["a"] || keyStates.xMovement["ArrowLeft"]) &&
+        (!keyCooldowns["left"] || currentTime >= keyCooldowns["left"])) {
+        xMovement("left", currentTime);
     }
 
-    if ((key_states.x_movement["d"] || key_states.x_movement["ArrowRight"]) &&
-        (!key_cooldowns["right"] || current_time >= key_cooldowns["right"])) {
-        x_movement("right", current_time)
+    if ((keyStates.xMovement["d"] || keyStates.xMovement["ArrowRight"]) &&
+        (!keyCooldowns["right"] || currentTime >= keyCooldowns["right"])) {
+        xMovement("right", currentTime);
     }
 
-    if ((key_states.forward["w"] || key_states.forward[" "] || key_states.forward["ArrowUp"]) &&
-        (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
-        shoot_projectile();
-        key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
+    if ((keyStates.forward["w"] || keyStates.forward[" "] || keyStates.forward["ArrowUp"]) &&
+        (!keyCooldowns["forward"] || currentTime > keyCooldowns["forward"])) {
+        shootProjectile();
+        keyCooldowns["forward"] = currentTime + shootCooldownTime;
     }
 
-    if (click_states["0"] && (!key_cooldowns["forward"] || current_time > key_cooldowns["forward"])) {
-        shoot_projectile();
-        key_cooldowns["forward"] = current_time + SHOOT_COOLDOWN_TIME;
+    if (clickStates["0"] && (!keyCooldowns["forward"] || currentTime > keyCooldowns["forward"])) {
+        shootProjectile();
+        keyCooldowns["forward"] = currentTime + shootCooldownTime;
     }
 
     /* request the next frame */
-    if (is_gameloop_running) {
-        requestAnimationFrame(game_loop);
+    if (isGameLoopRunning) {
+        requestAnimationFrame(gameLoop);
     }
 }
 
-function move_player_horizontally(distance) {
+function movePlayerHorizontally(distance) {
     const player = document.getElementById("player");
-    const player_position = getComputedStyle(player).left;
-    let player_position_int = parseInt(player_position);
+    const playerPosition = getComputedStyle(player).left;
+    let playerPositionInt = parseInt(playerPosition);
 
-    max_position = game_canvas_width - 180;
-    min_position = 40;
+    const maxPosition = gameCanvasWidth - 180;
+    const minPosition = 40;
 
-    if (player_position_int > max_position) {
-        player_position_int = max_position;
-        velocity_state = 0;
+    if (playerPositionInt > maxPosition) {
+        playerPositionInt = maxPosition;
+        velocityState = 0;
     }
-    else if (player_position_int < min_position) {
-        player_position_int = min_position;
-        velocity_state = 0;
+    else if (playerPositionInt < minPosition) {
+        playerPositionInt = minPosition;
+        velocityState = 0;
     }
     else {
-        player_position_int += distance;
+        playerPositionInt += distance;
     }
-    player.style.left = player_position_int + "px";
+    player.style.left = playerPositionInt + "px";
 }
 
-function update_score() {
-    score = document.querySelector(".score");
-    score_number = score.querySelector("#score-number");
-    score_number.innerText = current_score;
+function updateScore() {
+    const score = document.querySelector(".score");
+    const scoreNumber = score.querySelector("#score-number");
+    scoreNumber.innerText = currentScore;
 }
 
-function init_audio_icon() {
+function initAudioIcon() {
     const path = "images/components/";
-    const audio_control_container = document.getElementById("audio-control");
-    const audio_element = document.getElementById("audio-element");
-    const audio_control_icon = document.createElement('img');
-    audio_control_icon.style.width = "80%";
-    audio_control_icon.id = "audio-control-icon"
+    const audioControlContainer = document.getElementById("audio-control");
+    const audioElement = document.getElementById("audio-element");
+    const audioControlIcon = document.createElement('img');
+    audioControlIcon.style.width = "80%";
+    audioControlIcon.id = "audio-control-icon";
 
-    const mute_state = localStorage.getItem("audio_mute_state");
-    if (mute_state === null) { // If not previously cached
-        localStorage.setItem("audio_mute_state", "false")
+    const muteState = localStorage.getItem("audio_mute_state");
+    if (muteState === null) { // If not previously cached
+        localStorage.setItem("audio_mute_state", "false");
     }
 
     setTimeout(() => {
-        if (mute_state == "true") {
-            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
-            audio_element.muted = true;
+        if (muteState === "true") {
+            audioControlIcon.src = path + "speaker_muted.svg"; // Set to muted icon
+            audioElement.muted = true;
         } else {
-            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
-            audio_element.muted = false;
+            audioControlIcon.src = path + "speaker_active.svg"; // Set to active icon
+            audioElement.muted = false;
         }
     }, 200);
 
-    audio_control_container.appendChild(audio_control_icon);
+    audioControlContainer.appendChild(audioControlIcon);
 }
 
-function toggle_audio() {
+function toggleAudio() {
     const path = "images/components/";
-    const audio_button = document.getElementById("audio-control");
-    const audio_control_icon = document.getElementById("audio-control-icon");
-    const audio_element = document.getElementById("audio-element");
+    const audioButton = document.getElementById("audio-control");
+    const audioControlIcon = document.getElementById("audio-control-icon");
+    const audioElement = document.getElementById("audio-element");
 
-    audio_control_icon.alt = "Audio";
-    audio_button.style.pointerEvents = "none";
+    audioControlIcon.alt = "Audio";
+    audioButton.style.pointerEvents = "none";
 
-    audio_control_icon.style.transition = "scale .2s"
-    audio_control_icon.style.scale = "1.15";
+    audioControlIcon.style.transition = "scale .2s";
+    audioControlIcon.style.scale = "1.15";
     setTimeout(() => {
-        audio_control_icon.style.scale = "1.0"
+        audioControlIcon.style.scale = "1.0";
     }, 200);
 
     setTimeout(() => {
-        const mute_state = localStorage.getItem("audio_mute_state");
-        if (mute_state === null) { // If not previously cached
-            localStorage.setItem("audio_mute_state", "false")
+        const muteState = localStorage.getItem("audio_mute_state");
+        if (muteState === null) { // If not previously cached
+            localStorage.setItem("audio_mute_state", "false");
         }
 
-        if (mute_state === "true") {
-            audio_control_icon.src = path + "speaker_active.svg"; // Set to active icon
-            audio_element.muted = false;
+        if (muteState === "true") {
+            audioControlIcon.src = path + "speaker_active.svg"; // Set to active icon
+            audioElement.muted = false;
             localStorage.setItem("audio_mute_state", "false");
         } else {
-            audio_control_icon.src = path + "speaker_muted.svg"; // Set to muted icon
-            audio_element.muted = true;
+            audioControlIcon.src = path + "speaker_muted.svg"; // Set to muted icon
+            audioElement.muted = true;
             localStorage.setItem("audio_mute_state", "true");
         }
-        audio_button.style.pointerEvents = "auto";
+        audioButton.style.pointerEvents = "auto";
     }, 200);
 }
 
 requestAnimationFrame(() => {
-    init_audio_icon();
-})
+    initAudioIcon();
+});
 
-function toggle_invert_color() {
+function toggleInvertColor() {
     const icon = document.getElementById("invert-colors-icon");
     const score = document.getElementById("score");
-    const audio_control_icon = document.getElementById("audio-control-icon");
-    const github_icon = document.querySelector(".github-icon")
+    const audioControlIcon = document.getElementById("audio-control-icon");
+    const githubIcon = document.querySelector(".github-icon");
     const body = document.body;
 
-    const body_computedStyle = getComputedStyle(body);
+    const bodyComputedStyle = getComputedStyle(body);
 
-    if (body_computedStyle.backgroundColor === "rgb(255, 255, 255)") {
+    if (bodyComputedStyle.backgroundColor === "rgb(255, 255, 255)") {
         body.style.backgroundColor = "black";
         body.style.color = "white";
         score.style.filter = "invert(0.1)";
-        audio_control_icon.style.filter = "invert(0.9)";
-        icon.src = "images/components/light_mode.svg"
+        audioControlIcon.style.filter = "invert(0.9)";
+        icon.src = "images/components/light_mode.svg";
         icon.style.filter = "invert(0.9)";
-        github_icon.style.filter = "none"
+        githubIcon.style.filter = "none";
     }
     else {
         body.style.backgroundColor = "white";
         body.style.color = "black";
         score.style.filter = "none";
-        audio_control_icon.style.filter = "none";
-        icon.src = "images/components/dark_mode.svg"
+        audioControlIcon.style.filter = "none";
+        icon.src = "images/components/dark_mode.svg";
         icon.style.filter = "none";
-        github_icon.style.filter = "invert(0.9)"
+        githubIcon.style.filter = "invert(0.9)";
     }
 }
 
-function create_asteroid() {
+function createAsteroid() {
     const asteroid = document.createElement("img");
     asteroid.src = "images/components/asteroid.png";
     asteroid.className = "asteroid";
     asteroid.alt = "Asteroid";
-    game_canvas.appendChild(asteroid);
+    gameCanvas.appendChild(asteroid);
 
-    const asteroid_height = asteroid.clientHeight;
-    const asteroid_animation_time = 3000;
+    const asteroidHeight = asteroid.clientHeight;
+    const asteroidAnimationTime = 3000;
 
     /* Calculate how far to move the asteroid during the animation */
-    const distance_to_move = game_canvas_height + asteroid_height; // Move beyond the game area height plus the asteroid's height
+    const distanceToMove = gameCanvasHeight + asteroidHeight; // Move beyond the game area height plus the asteroid's height
 
-    horizontal_placement = get_random_number_between(40, game_canvas_width - 80)
-    asteroid.style.left = horizontal_placement + "px";
+    const horizontalPlacement = getRandomNumberBetween(40, gameCanvasWidth - 80);
+    asteroid.style.left = horizontalPlacement + "px";
 
-    const degrees_to_rotate = get_random_number_between(.5, 2.0) * 360;
+    const degreesToRotate = getRandomNumberBetween(.5, 2.0) * 360;
     const keyframes = [
-        { transform: `translateY(-${distance_to_move}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
-        { transform: `translateY(${game_canvas_height}px) rotate(${degrees_to_rotate}deg)` } // Move it down past the bottom
+        { transform: `translateY(-${distanceToMove}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
+        { transform: `translateY(${gameCanvasHeight}px) rotate(${degreesToRotate}deg)` } // Move it down past the bottom
     ];
 
     const options = {
-        duration: asteroid_animation_time,
+        duration: asteroidAnimationTime,
         fill: "forwards"
     };
 
     asteroid.animate(keyframes, options);
     setTimeout(() => {
         asteroid.remove();
-    }, asteroid_animation_time);
+    }, asteroidAnimationTime);
 }
 
-let already_fullscreen = false;
-function toggle_fullscreen() {
-    if (!already_fullscreen) {
-        already_fullscreen = true;
-        game_canvas.requestFullscreen();
-        // game_canvas.requestFullscreen().then(() => {
-        //     already_fullscreen = true;
-        // });
+let alreadyFullscreen = false;
+function toggleFullscreen() {
+    if (!alreadyFullscreen) {
+        alreadyFullscreen = true;
+        gameCanvas.requestFullscreen();
     } else {
-        already_fullscreen = false;
+        alreadyFullscreen = false;
         document.exitFullscreen();
-        // document.exitFullscreen().then(() => {
-        //     already_fullscreen = false;
-        // });
     }
 }
 
 function handleFullscreenChange() {
     const path = "images/components/";
-    const fullscreen_icon = document.getElementById("fullscreen-icon");
+    const fullscreenIcon = document.getElementById("fullscreen-icon");
 
-    if (document.fullscreenElement === game_canvas) {
+    if (document.fullscreenElement === gameCanvas) {
         // Game area is in fullscreen
-        fullscreen_icon.src = path + "fullscreen_exit.svg";
-        game_canvas.style.borderStyle = "none"; // Remove border
+        fullscreenIcon.src = path + "fullscreen_exit.svg";
+        gameCanvas.style.borderStyle = "none"; // Remove border
     } else {
         // Game area has exited fullscreen
-        fullscreen_icon.src = path + "fullscreen_enter.svg";
-        game_canvas.style.borderStyle = "solid";
+        fullscreenIcon.src = path + "fullscreen_enter.svg";
+        gameCanvas.style.borderStyle = "solid";
     }
 }
 
@@ -556,13 +542,11 @@ document.addEventListener('fullscreenchange', handleFullscreenChange);
 
 // Set to fullscreen by default on smaller screens. Currently not working.
 function toggleFullscreenBasedOnWindowSize() {
-    if (game_canvas_width <= 700 && !already_fullscreen) {
-        // already_fullscreen = true;
-        toggle_fullscreen();
+    if (gameCanvasWidth <= 700 && !alreadyFullscreen) {
+        toggleFullscreen();
     }
-    else if (game_canvas_width > 700 && already_fullscreen) {
-        // already_fullscreen = false;
-        toggle_fullscreen();
+    else if (gameCanvasWidth > 700 && alreadyFullscreen) {
+        toggleFullscreen();
     }
 }
 

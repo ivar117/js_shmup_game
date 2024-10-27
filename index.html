@@ -9,7 +9,7 @@
     </head>
     <body>
         <header id="topnav">
-            <button class="invert-colors" id="invert-colors" onclick="toggle_invert_color()">
+            <button class="invert-colors" id="invert-colors" onclick="toggleInvertColor()">
                 <img id="invert-colors-icon" src="images/components/dark_mode.svg">
             </button>
         </header>
@@ -21,7 +21,7 @@
                     Your browser does not support the audio element.
                 </audio>
 
-                <button id="audio-control" class="audio" onclick="toggle_audio()"></button>
+                <button id="audio-control" class="audio" onclick="toggleAudio()"></button>
 
                 <div style="display: none" class="score" id="score">
                     <div class="score-text">Score: </div> 
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="game-canvas" id="game-canvas">
-                <button id="fullscreen-control" class="audio" onclick="toggle_fullscreen()">
+                <button id="fullscreen-control" class="audio" onclick="toggleFullscreen()">
                     <img id="fullscreen-icon" class="fullscreen" src="images/components/fullscreen_enter.svg">
                 </button>
                 <div class="start-text" id="start-text">Click or press w to start</div>
