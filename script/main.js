@@ -204,8 +204,11 @@ function triggerOnStart() {
 
     /* Initialize falling asteroid animation in the game canvas */
     setTimeout(() => {
-        createAsteroid();
-        setInterval(createAsteroid, 3000);
+        createAsteroid(3000);
+        setInterval(() => {
+            createAsteroid(3000);
+        }, 3000);
+
     }, 1000);
 }
 
@@ -477,39 +480,6 @@ function toggleInvertColor() {
         icon.style.filter = "none";
         githubIcon.style.filter = "invert(0.9)";
     }
-}
-
-function createAsteroid() {
-    const asteroid = document.createElement("img");
-    asteroid.src = "images/components/asteroid.png";
-    asteroid.className = "asteroid";
-    asteroid.alt = "Asteroid";
-    gameCanvas.appendChild(asteroid);
-
-    const asteroidHeight = asteroid.clientHeight;
-    const asteroidAnimationTime = 3000;
-
-    /* Calculate how far to move the asteroid during the animation */
-    const distanceToMove = gameCanvasHeight + asteroidHeight; // Move beyond the game area height plus the asteroid's height
-
-    const horizontalPlacement = getRandomNumberBetween(40, gameCanvasWidth - 80);
-    asteroid.style.left = horizontalPlacement + "px";
-
-    const degreesToRotate = getRandomNumberBetween(.5, 2.0) * 360;
-    const keyframes = [
-        { transform: `translateY(-${distanceToMove}px) rotate(0deg)` }, // Asteroid starts upward beyond the view
-        { transform: `translateY(${gameCanvasHeight}px) rotate(${degreesToRotate}deg)` } // Move it down past the bottom
-    ];
-
-    const options = {
-        duration: asteroidAnimationTime,
-        fill: "forwards"
-    };
-
-    asteroid.animate(keyframes, options);
-    setTimeout(() => {
-        asteroid.remove();
-    }, asteroidAnimationTime);
 }
 
 let alreadyFullscreen = false;
