@@ -47,11 +47,7 @@ button.invert-colors {
     overflow: hidden;
     border: 17px solid #4e4e4e;
     border-radius: 20px;
-    background-image: url("../images/stars.jpg");
-    /*background-repeat: repeat-y;*/
-    background-repeat:space;
-    background-size: 100%;
-    background-attachment: fixed;
+    background-color: black;
     position: relative; /* Items are relative to the game area */
     height: 80vh;
     flex-direction: row;
@@ -142,6 +138,11 @@ button.audio {
 .planet {
     position: absolute;
     z-index: 3;
+}
+
+.star {
+    position: absolute;
+    z-index: 1;
 }
 
 footer {

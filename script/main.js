@@ -67,6 +67,14 @@ function updateRenderDimensions() {
 // Resize event listener
 window.addEventListener('resize', () => {
     updateRenderDimensions();
+
+    const stars = document.querySelectorAll(".star");
+    stars.forEach((star) => {
+        gameCanvas.removeChild(star);
+    })
+
+    if (!isGameLoopRunning)
+        populateStars();
 });
 
 // Function to create enemies
@@ -202,6 +210,10 @@ function triggerOnStart() {
     const startText = document.getElementById("start-text");
     startText.remove();
 
+    /* Start game loop */
+    isGameLoopRunning = true;
+    gameLoop();
+
     /* Initialize falling asteroid animation in the game canvas */
     setTimeout(() => {
         createAsteroid(3000);
@@ -230,6 +242,7 @@ function triggerOnStart() {
             }
         }, 8000);
     }, 6000)
+    initStarsAnimation(1500);
 }
 
 document.body.addEventListener("keydown", initialKeyEventHandler);
@@ -262,12 +275,6 @@ const keyDownHandler = function(event) {
             keyStates[key][event.key] = true;
         }
     });
-
-    /* Start the game loop if not already running */
-    if (!isGameLoopRunning) {
-        isGameLoopRunning = true;
-        gameLoop();
-    }
 }
 
 let decelerationInterval;
@@ -318,14 +325,8 @@ const keyUpHandler = function(event) {
 
 const clickDownHandler = function(event) {
     const fullscreenState = document.getElementById("fullscreen-control");
-    if (!fullscreenState.contains(event.target)) {
+    if (!fullscreenState.contains(event.target))
         clickStates[event.button] = true;
-
-        if (!isGameLoopRunning) {
-            isGameLoopRunning = true;
-            gameLoop();
-        }
-    }
 }
 
 const clickUpHandler = function(event) {
