@@ -139,6 +139,11 @@ button.audio {
     z-index: 2;
 }
 
+.planet {
+    position: absolute;
+    z-index: 3;
+}
+
 footer {
     display: flex;
     text-align: center;

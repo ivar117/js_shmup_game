@@ -210,6 +210,26 @@ function triggerOnStart() {
         }, 3000);
 
     }, 1000);
+
+    /* Initialize random planet animation in the game canvas */
+    setTimeout(() => {
+        /* Variable which sets the planet to spawn either in the
+        * first or last quarter of the game canvas.
+        */
+        let quarter = Math.floor(Math.random() * 2) + 1;
+        const planetAnimationTime = 3000;
+        randomPlanetsAnimate(quarter, planetAnimationTime);
+        setInterval(() => {
+            if (quarter === 1) {
+                quarter = 2;
+                randomPlanetsAnimate(quarter, planetAnimationTime);
+            }
+            else {
+                quarter = 1;
+                randomPlanetsAnimate(quarter, planetAnimationTime);
+            }
+        }, 8000);
+    }, 6000)
 }
 
 document.body.addEventListener("keydown", initialKeyEventHandler);

@@ -62,3 +62,32 @@ function createAsteroid(animationTime) {
 
     animateElementOnGameCanvas(asteroid, animationTime, keyframes)
 }
+
+function randomPlanetsAnimate(quarter, animationTime) {
+    // Why use a real backend when you can just do this ;)
+    const planetNames = ["planetRed", "planetOcean", "planetRing"];
+    const planetNameIndex = getWholeRandomNumberBetween(0, planetNames.length-1);
+    const planetName = planetNames[planetNameIndex];
+
+    const planetObject = {
+        src: "images/components/planets/" + planetName + ".png",
+        class: "planet",
+        width: 70,
+        alt: "Planet"
+    };
+
+    const planet = document.createElement("img");
+    planet.src = planetObject.src;
+    planet.className = planetObject.class;
+    planet.width = planetObject.width;
+    planet.alt = planetObject.alt;
+
+    gameCanvasFirstQuarter = (gameCanvasWidth - 60) / 4;
+
+    const placementX1 = Math.floor(Math.random() * gameCanvasFirstQuarter);
+    const placementX2 = Math.floor((gameCanvasWidth - 60) - Math.random() * gameCanvasFirstQuarter);
+    let placementX = (quarter === 1) ? placementX1 : placementX2;
+    planet.style.left = placementX + "px";
+
+    animateElementOnGameCanvas(planet, animationTime);
+}
