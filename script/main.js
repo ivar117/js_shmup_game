@@ -406,8 +406,7 @@ function movePlayerHorizontally(distance) {
 }
 
 function updateScore() {
-    const score = document.querySelector(".score");
-    const scoreNumber = score.querySelector("#score-number");
+    const scoreNumber = document.getElementById("score-number");
     scoreNumber.innerText = currentScore;
 }
 
