@@ -341,6 +341,7 @@ function changeVelocity(increment) {
 }
 
 function xMovement(direction, currentTime) {
+    clearInterval(decelerationInterval);
     if (direction === "right") {
         changeVelocity(gameCanvasWidth * canvasWidthVelocityFactor);
     }
